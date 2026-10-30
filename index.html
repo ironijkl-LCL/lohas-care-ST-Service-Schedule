@@ -4,628 +4,1331 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>新 ST 臨時服務時間表</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'Noto Sans TC', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            sans: ['Inter', 'Noto Sans TC', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          colors: {
+            softOrange: '#f5d0a9',
+            softWhite: '#fcfcfc',
+            softBlue: '#e0f2fe',
+            softPurple: '#d8b4fe',
+            softYellow: '#fef08a',
+            excelBlue: '#cfe2ff'
           }
         }
       }
     };
   </script>
+  <!-- FontAwesome 圖標庫 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
     ::-webkit-scrollbar { height: 8px; width: 8px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    .cell-beige { background-color: #f5e6d3; }
-    .cell-purple { background-color: #d8b4fe; }
-    .cell-blue { background-color: #bfdbfe; }
-    .cell-yellow { background-color: #fef08a; }
-    .cell-pink { background-color: #fbcfe8; }
-    .cell-orange { background-color: #fed7aa; }
-    .header-staff { background-color: #fde68a; }
-    .header-blue { background-color: #93c5fd; }
-    .header-pink { background-color: #f9a8d4; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    /* 核心直欄分組色標 */
+    .col-orange-base { background-color: #f5d0a9 !important; }
+    .col-white-base { background-color: #fcfcfc !important; }
+    .col-blue-base { background-color: #e0f2fe !important; }
+    .header-pink-base { background-color: #fbcfe8 !important; }
+    
+    /* 覆蓋色塊類型 */
+    .cell-type-default { }
+    .cell-type-purple { background-color: #d8b4fe !important; }
+    .cell-type-blue { background-color: #bfdbfe !important; }
+    .cell-type-yellow { background-color: #fef08a !important; }
+    .cell-type-pink { background-color: #fbcfe8 !important; }
+    .cell-type-blank { background-color: #ffffff !important; }
+
+    /* 儲存格互動樣式 */
+    .editable-cell {
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .editable-cell:hover {
+      box-shadow: inset 0 0 0 2px #059669 !important;
+      filter: brightness(0.97);
+    }
+
     table { border-collapse: separate; border-spacing: 0; }
-    th, td { border: 1px solid #e2e8f0; }
-    .sticky-col { position: sticky; left: 0; z-index: 20; background: white; }
-    .sticky-header { position: sticky; top: 0; z-index: 30; }
+    th, td { border: 1px solid #cbd5e1; }
+    .sticky-col-date { position: sticky; left: 0; z-index: 25; }
+    .sticky-col-time { position: sticky; left: 60px; z-index: 25; }
+    .sticky-header { position: sticky; top: 0; z-index: 35; }
+
+    .tab-btn {
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .tab-btn.active {
+      background-color: #059669 !important;
+      color: #ffffff !important;
+      font-weight: 700 !important;
+      border-color: #059669 !important;
+    }
+    
+    @media print {
+      header, .no-print { display: none !important; }
+      body { background: white; }
+      .overflow-x-auto { overflow: visible !important; max-height: none !important; }
+    }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen">
-  <!-- Header -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-    <div class="max-w-[1600px] mx-auto px-4 h-14 flex items-center justify-between">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- 頂部 Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
+    <div class="max-w-[1700px] mx-auto px-3 sm:px-4 h-14 flex items-center justify-between gap-2">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-sm">
-          <i class="fa-solid fa-calendar-days text-sm"></i>
+        <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+          <i class="fa-solid fa-calendar-check text-base"></i>
         </div>
         <div>
-          <h1 class="font-bold text-slate-900 text-base tracking-tight">新 ST 臨時服務時間表</h1>
-          <p class="text-[11px] text-slate-500">26 – 31 十月 2026 ｜ 臨時服務排班</p>
+          <h1 class="font-bold text-slate-900 text-sm sm:text-base tracking-tight flex items-center gap-2">
+            新 ST 臨時服務時間表
+            <span id="currentWeekBadge" class="text-[11px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full hidden sm:inline-block border border-emerald-300">
+              26-31/10/2026
+            </span>
+          </h1>
+          <p class="text-[11px] text-slate-500 hidden sm:block">每日精確對齊「幾月幾日」· 支援切換至年底各週</p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <div class="relative hidden sm:block">
+
+      <!-- 操作工具按鈕 -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <div class="relative hidden lg:block">
           <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-slate-400 text-xs"></i>
-          <input type="text" id="searchInput" placeholder="搜尋個案 / 職員 / 地點..." 
-                 class="pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs w-56 focus:outline-none focus:ring-1 focus:ring-emerald-400">
+          <input type="text" id="searchInput" placeholder="搜尋個案/院舍/同工..." 
+                 class="pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs w-48 focus:outline-none focus:ring-2 focus:ring-emerald-500">
         </div>
-        <button onclick="window.print()" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-medium text-slate-700">
-          <i class="fa-solid fa-print mr-1"></i>列印
+
+        <!-- WhatsApp 轉發 -->
+        <div class="relative">
+          <button id="btnWhatsappDropdown" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
+            <i class="fa-brands fa-whatsapp text-sm"></i>
+            <span class="hidden sm:inline">WhatsApp</span>
+            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+          </button>
+          
+          <div id="whatsappMenu" class="hidden absolute right-0 mt-1 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs">
+            <div class="px-3 py-1.5 font-bold text-slate-400 text-[10px] uppercase border-b border-slate-100">快速發送報表</div>
+            <button onclick="shareWeeklyOverview()" class="w-full text-left px-3 py-2 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2">
+              <i class="fa-solid fa-clipboard-list text-emerald-600"></i> 本週全體概況簡報
+            </button>
+            <button onclick="shareTodaySchedule()" class="w-full text-left px-3 py-2 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2">
+              <i class="fa-solid fa-calendar-day text-blue-600"></i> 今日排班重點
+            </button>
+            <div class="px-3 py-1.5 font-bold text-slate-400 text-[10px] uppercase border-b border-t border-slate-100 mt-1">按同工排班</div>
+            <div class="max-h-44 overflow-y-auto" id="staffDropdownList"></div>
+          </div>
+        </div>
+
+        <!-- 還原按鈕 -->
+        <button onclick="resetCurrentWeekData()" class="px-2 py-1.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-xs font-semibold text-rose-700 flex items-center gap-1 shadow-sm transition">
+          <i class="fa-solid fa-rotate-left"></i> 還原分頁
         </button>
-        <button id="btnExport" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold">
-          <i class="fa-solid fa-file-excel mr-1"></i>匯出
+
+        <!-- 匯出按鈕 -->
+        <button onclick="exportToCSV()" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 flex items-center gap-1 shadow-sm transition">
+          <i class="fa-solid fa-file-csv text-emerald-600"></i> 匯出
         </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-[1600px] mx-auto p-3 sm:p-4">
-    <!-- Legend -->
-    <div class="bg-white rounded-xl border border-slate-200 p-3 mb-3 flex flex-wrap items-center gap-4 text-xs">
-      <span class="font-semibold text-slate-600">色塊說明：</span>
-      <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded cell-beige border border-slate-300"></span> 一般服務</div>
-      <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded cell-purple border border-slate-300"></span> 重點 / 特別</div>
-      <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded cell-blue border border-slate-300"></span> Allen / Fish 相關</div>
-      <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded cell-yellow border border-slate-300"></span> 工作坊 / 會議</div>
-      <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded cell-pink border border-slate-300"></span> 備註 / 協議</div>
-      <div class="ml-auto text-slate-500">
-        <i class="fa-solid fa-info-circle mr-1"></i>
-        總個案數顯示於底部 · 可左右拖曳查看所有職員
+  <!-- 主內容區 -->
+  <main class="max-w-[1700px] w-full mx-auto p-2 sm:p-4 flex-1 flex flex-col">
+    
+    <!-- 圖例與資訊說明 -->
+    <div class="bg-white rounded-xl border border-slate-200 p-3 mb-3 shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs no-print">
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="font-bold text-slate-700 flex items-center gap-1">
+          <i class="fa-solid fa-palette text-slate-400"></i> 直欄分組：
+        </span>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded border border-amber-300 col-orange-base inline-block"></span>
+          <span>軟橙組 (Nanette, Dorothy, Matthew, Bibianna, Jason)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded border border-slate-300 col-white-base inline-block"></span>
+          <span>軟白組 (Tammy, Kelvin, Christy, Tina, Martina)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded border border-sky-300 col-blue-base inline-block"></span>
+          <span>淺藍組 (Allen, Fish)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded border border-purple-300 cell-type-purple inline-block"></span>
+          <span>重點特別</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded border border-yellow-300 cell-type-yellow inline-block"></span>
+          <span>會議工作坊</span>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-600 bg-emerald-50 border border-emerald-200 text-emerald-800 px-2.5 py-1 rounded-md font-medium">
+        <i class="fa-solid fa-calendar-check text-emerald-600 mr-1"></i> 左側日期已與實際月份精準對齊，點擊任何格子可編輯文字與色彩
       </div>
     </div>
 
-    <!-- Main Table Container -->
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="overflow-x-auto" style="max-height: calc(100vh - 220px);">
-        <table class="w-full text-[11px] min-w-[1400px]" id="scheduleTable">
-          <thead class="sticky-header">
-            <tr class="bg-slate-50">
-              <th class="sticky-col px-2 py-2 text-left font-bold text-slate-700 w-16 border-r-2 border-slate-300 bg-slate-50">日期</th>
-              <th class="sticky-col px-2 py-2 text-center font-bold text-slate-700 w-10 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">時段</th>
-              <th class="header-staff px-2 py-2 text-center font-bold text-amber-900 min-w-[90px]">Nanette</th>
-              <th class="header-staff px-2 py-2 text-center font-bold text-amber-900 min-w-[90px]">Tammy</th>
-              <th class="header-staff px-2 py-2 text-center font-bold text-amber-900 min-w-[90px]">Dorothy</th>
-              <th class="header-staff px-2 py-2 text-center font-bold text-amber-900 min-w-[100px]">Kelvin</th>
-              <th class="header-staff px-2 py-2 text-center font-bold text-amber-900 min-w-[90px]">Matthew</th>
-              <th class="header-staff px-2 py-2 text-center font-bold text-amber-900 min-w-[90px]">Christy</th>
-              <th class="header-staff px-2 py-2 text-center font-bold text-amber-900 min-w-[90px]">Bibianna</th>
-              <th class="header-staff px-2 py-2 text-center font-bold text-amber-900 min-w-[100px]">Tina</th>
-              <th class="header-staff px-2 py-2 text-center font-bold text-amber-900 min-w-[100px]">Jason</th>
-              <th class="header-staff px-2 py-2 text-center font-bold text-amber-900 min-w-[100px]">Martina</th>
-              <th class="header-blue px-2 py-2 text-center font-bold text-blue-900 min-w-[90px]">Allen</th>
-              <th class="header-blue px-2 py-2 text-center font-bold text-blue-900 min-w-[90px]">Fish</th>
-              <th class="header-pink px-2 py-2 text-center font-bold text-pink-900 min-w-[110px]">其他 / 備註</th>
+    <!-- 表格主容器 -->
+    <div class="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden flex-1 flex flex-col">
+      <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] relative" id="tableContainer">
+        <table class="w-full text-[11px] border-collapse min-w-[1450px]" id="scheduleTable">
+          <thead class="sticky-header shadow-sm select-none">
+            <tr>
+              <th class="sticky-col-date bg-slate-100 text-slate-800 font-bold px-2 py-2.5 text-center w-20 border-r-2 border-slate-300">日期</th>
+              <th class="sticky-col-time bg-slate-100 text-slate-700 font-bold px-1.5 py-2.5 text-center w-10 border-r-2 border-slate-300">時段</th>
+              
+              <!-- 軟橙組 -->
+              <th onclick="openStaffModal('Nanette')" class="col-orange-base text-amber-950 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+                Nanette <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              <!-- 軟白組 -->
+              <th onclick="openStaffModal('Tammy')" class="col-white-base text-slate-900 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+                Tammy <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              <!-- 軟橙組 -->
+              <th onclick="openStaffModal('Dorothy')" class="col-orange-base text-amber-950 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+                Dorothy <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              <!-- 軟白組 -->
+              <th onclick="openStaffModal('Kelvin')" class="col-white-base text-slate-900 font-bold px-2 py-2.5 text-center min-w-[105px] cursor-pointer hover:brightness-95">
+                Kelvin <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              <!-- 軟橙組 -->
+              <th onclick="openStaffModal('Matthew')" class="col-orange-base text-amber-950 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+                Matthew <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              <!-- 軟白組 -->
+              <th onclick="openStaffModal('Christy')" class="col-white-base text-slate-900 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+                Christy <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              <!-- 軟橙組 -->
+              <th onclick="openStaffModal('Bibianna')" class="col-orange-base text-amber-950 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+                Bibianna <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              <!-- 軟白組 -->
+              <th onclick="openStaffModal('Tina')" class="col-white-base text-slate-900 font-bold px-2 py-2.5 text-center min-w-[105px] cursor-pointer hover:brightness-95">
+                Tina <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              <!-- 軟橙組 -->
+              <th onclick="openStaffModal('Jason')" class="col-orange-base text-amber-950 font-bold px-2 py-2.5 text-center min-w-[105px] cursor-pointer hover:brightness-95">
+                Jason <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              <!-- 軟白組 -->
+              <th onclick="openStaffModal('Martina')" class="col-white-base text-slate-900 font-bold px-2 py-2.5 text-center min-w-[105px] cursor-pointer hover:brightness-95">
+                Martina <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              <!-- 淺藍組 -->
+              <th onclick="openStaffModal('Allen')" class="col-blue-base text-blue-950 font-bold px-2 py-2.5 text-center min-w-[90px] cursor-pointer hover:brightness-95">
+                Allen <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              <th onclick="openStaffModal('Fish')" class="col-blue-base text-blue-950 font-bold px-2 py-2.5 text-center min-w-[90px] cursor-pointer hover:brightness-95">
+                Fish <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
+              </th>
+              
+              <!-- 備註/其他 -->
+              <th class="header-pink-base text-pink-950 font-bold px-2 py-2.5 text-center min-w-[120px]">其他 / 備註</th>
             </tr>
           </thead>
-          <tbody id="tableBody">
-            <!-- 一 10/26 am -->
-            <tr>
-              <td class="sticky-col px-2 py-1.5 font-bold text-slate-800 border-r-2 border-slate-300 bg-white align-top" rowspan="2">
-                <div class="text-rose-600">一</div>
-                <div class="text-[10px] text-slate-500">10月26日</div>
-              </td>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">am</td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">城市</div>
-                <div class="text-[10px] text-slate-600">3 AL</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-purple px-1.5 py-1 align-top">
-                <div class="font-semibold">錦勝</div>
-                <div class="text-[10px]">3 松心香 (2/F)</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">5 康柏軒</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">4 陽光</div>
-                <div class="text-[10px]">SL</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">騰達</div>
-                <div class="text-[10px]">sarc dsg screen</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">2 英皇</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">2 P260672 1000</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">騰達 w/ Bibianna</div>
-                <div class="text-[10px]">5</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top">
-                <div class="font-semibold">SL</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="cell-pink px-1.5 py-1 align-top">
-                <div class="font-semibold">Bibianna</div>
-                <div class="text-[10px]">Sarcopenic DSG screening pack</div>
-              </td>
-            </tr>
-            <!-- 一 10/26 pm -->
-            <tr>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">pm</td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">城市</div>
-                <div class="text-[10px]">2</div>
-                <div class="text-[9px] text-slate-500 mt-0.5">CSY carer &amp; TWP meal ob</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">GC visit (check equip)</div>
-                <div class="text-[10px]">M4384@深灣1600</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">Health service meeting@MOSTE</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">PM CL</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">P260668 1600</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">type progress sum for OPD FU</div>
-                <div class="text-[10px]">2 new</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top">
-                <div class="font-semibold">VGreen proj</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-            </tr>
-
-            <!-- 二 10/27 am -->
-            <tr>
-              <td class="sticky-col px-2 py-1.5 font-bold text-slate-800 border-r-2 border-slate-300 bg-white align-top" rowspan="2">
-                <div>二</div>
-                <div class="text-[10px] text-slate-500">10月27日</div>
-              </td>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">am</td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">福恩</div>
-                <div class="text-[10px]">2 CPL</div>
-                <div class="text-[9px] text-slate-500">FU research, 5 participants</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-purple px-1.5 py-1 align-top">
-                <div class="font-semibold">仁和居</div>
-                <div class="text-[10px]">8</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">Prepare health meeti</div>
-                <div class="text-[10px]">EH MFA 1100</div>
-                <div class="text-[9px]">Prepare ASTRA</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">安樂</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">4 樂怡</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">2 Q260514 (Wah Kwai TR, 1000)</div>
-                <div class="text-[10px]">Q260375 (Wah Fu, 1100)</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">護老樂(富怡)</div>
-                <div class="text-[10px]">H3-003</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">2 T蓮香1500</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">仁和居</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-            </tr>
-            <!-- 二 10/27 pm -->
-            <tr>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">pm</td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">TWGHs發布會</div>
-                <div class="text-[10px]">Doc</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">T蓮香1500</div>
-                <div class="text-[10px]">SQS prep 1630</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">順福</div>
-                <div class="text-[10px]">2</div>
-                <div class="text-[9px]">1600 off</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">P260542 1400</div>
-                <div class="text-[10px]">P260673 1600</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">環翠</div>
-                <div class="text-[10px]">2</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top">
-                <div class="font-semibold">VGreen proj</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-            </tr>
-
-            <!-- 三 10/28 am -->
-            <tr>
-              <td class="sticky-col px-2 py-1.5 font-bold text-slate-800 border-r-2 border-slate-300 bg-white align-top" rowspan="2">
-                <div>三</div>
-                <div class="text-[10px] text-slate-500">10月28日</div>
-              </td>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">am</td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">耆恩</div>
-                <div class="text-[10px]">4 雅明</div>
-                <div class="text-[9px]">w/ mst student</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">3 富璟</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">6 Prepare health meeti</div>
-                <div class="text-[10px]">保良</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">達源</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">4 匯豐 Vital stim</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">5 金華 new cases</div>
-                <div class="text-[10px]">Call Q260639</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">6 護老樂</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">4 W/尤菊 rv 1000</div>
-                <div class="text-[10px]">Y秀芳 rv 1200</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">保良</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top">
-                <div class="font-semibold">金華</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-            </tr>
-            <!-- 三 10/28 pm -->
-            <tr>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">pm</td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">MCCC LTH 1430@N</div>
-                <div class="text-[10px]">new Ax@KLC 16:15</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">MWC(LPS@CWB, 1330)</div>
-                <div class="text-[10px]">Health service meeting@HQ</div>
-                <div class="text-[9px]">KM meeting 1600</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="text-[9px]">1600 off</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">Q251005 (Aberdeen,</div>
-                <div class="text-[10px]">Q260657 (Wah Kwai, 1530)</div>
-                <div class="text-[10px]">Q260455 (Wah Fu, 1600)</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">P260682 1400</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">VGreen meeting 1730</div>
-                <div class="text-[10px]">KM meeting 1600</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-            </tr>
-
-            <!-- 四 10/29 am -->
-            <tr>
-              <td class="sticky-col px-2 py-1.5 font-bold text-slate-800 border-r-2 border-slate-300 bg-white align-top" rowspan="2">
-                <div>四</div>
-                <div class="text-[10px] text-slate-500">10月29日</div>
-              </td>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">am</td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">耆安</div>
-                <div class="text-[10px]">4 松齡</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-purple px-1.5 py-1 align-top">
-                <div class="font-semibold">4 喬康頤庭</div>
-                <div class="text-[10px]">diet spot check</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">5 綠山居</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">5 AL AM</div>
-              </td>
-              <td class="cell-purple px-1.5 py-1 align-top">
-                <div class="font-semibold">聖德</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">6 樂怡</div>
-                <div class="text-[10px]">匯豐</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">1 Back at 10am</div>
-                <div class="text-[10px]">1 Q260447 (Sheung Wan, 1000)</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">康悅</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">5 高高</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top">
-                <div class="font-semibold">2 聖德</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top">
-                <div class="font-semibold">康悅</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-            </tr>
-            <!-- 四 10/29 pm -->
-            <tr>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">pm</td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">MWC(CKG@AR4)</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">H57-003</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">木星</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">SQS prep 1530</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">樂悠居</div>
-                <div class="text-[10px]">2 康盛</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">馬貴</div>
-                <div class="text-[10px]">2</div>
-              </td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">1</div>
-              </td>
-              <td class="cell-purple px-1.5 py-1 align-top">
-                <div class="font-semibold">瑞安</div>
-                <div class="text-[10px]">H57-004</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top">
-                <div class="font-semibold">3 2pm off</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-            </tr>
-
-            <!-- 五 10/30 am - yellow highlight row -->
-            <tr class="bg-yellow-50">
-              <td class="sticky-col px-2 py-1.5 font-bold text-slate-800 border-r-2 border-slate-300 bg-yellow-50 align-top" rowspan="2">
-                <div>五</div>
-                <div class="text-[10px] text-slate-500">10月30日</div>
-              </td>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-yellow-100" style="left:64px;">am</td>
-              <td class="cell-yellow px-1.5 py-1 align-top">
-                <div class="font-semibold">MOSTE「策略創新工作坊」</div>
-                <div class="text-[10px]">16:30-18:00</div>
-              </td>
-              <td class="cell-yellow px-1.5 py-1 align-top">
-                <div class="font-semibold">逸柏軒</div>
-                <div class="text-[10px]">開美 LYS meal obs</div>
-                <div class="text-[9px]">fish</div>
-              </td>
-              <td class="cell-yellow px-1.5 py-1 align-top"></td>
-              <td class="cell-yellow px-1.5 py-1 align-top">
-                <div class="font-semibold">GMGC interview 11:00</div>
-              </td>
-              <td class="cell-yellow px-1.5 py-1 align-top">
-                <div class="font-semibold">真光</div>
-              </td>
-              <td class="cell-yellow px-1.5 py-1 align-top">
-                <div class="font-semibold">香恩</div>
-                <div class="text-[10px]">耀東</div>
-              </td>
-              <td class="cell-yellow px-1.5 py-1 align-top">
-                <div class="font-semibold">翠灣</div>
-                <div class="text-[9px] border border-emerald-400 rounded px-0.5">prep screen list</div>
-              </td>
-              <td class="cell-yellow px-1.5 py-1 align-top">
-                <div class="font-semibold">Q260640 (Mid levels, 1030)</div>
-                <div class="text-[10px]">樂善</div>
-                <div class="text-[10px]">樂家</div>
-              </td>
-              <td class="cell-yellow px-1.5 py-1 align-top">
-                <div class="font-semibold">天龍</div>
-                <div class="text-[10px]">P260676 1600</div>
-                <div class="text-[10px] text-rose-600">FU P260638</div>
-              </td>
-              <td class="cell-yellow px-1.5 py-1 align-top">
-                <div class="font-semibold">康福(東大街)</div>
-                <div class="text-[10px]">1 new</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top">
-                <div class="font-semibold">SL</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="cell-yellow px-1.5 py-1 align-top">
-                <div class="font-semibold">16:30-18:00</div>
-              </td>
-            </tr>
-            <!-- 五 10/30 pm -->
-            <tr>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">pm</td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">MWC(LPS@CWB, 1330)</div>
-                <div class="text-[10px]">MWC (WYH@KTown, 1530)</div>
-              </td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-              <td class="cell-beige px-1.5 py-1 align-top">
-                <div class="font-semibold">聖輝 PO</div>
-                <div class="text-[10px]">1</div>
-              </td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="cell-blue px-1.5 py-1 align-top"></td>
-              <td class="px-1.5 py-1 align-top"></td>
-            </tr>
-
-            <!-- 六 10/31 -->
-            <tr>
-              <td class="sticky-col px-2 py-1.5 font-bold text-slate-800 border-r-2 border-slate-300 bg-white align-top" rowspan="2">
-                <div class="text-sky-600">六</div>
-                <div class="text-[10px] text-slate-500">10月31日</div>
-              </td>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">am</td>
-              <td class="px-1.5 py-1 align-top" colspan="13" class="text-center text-slate-400 italic">（暫無排班）</td>
-            </tr>
-            <tr>
-              <td class="sticky-col px-1 py-1.5 text-center font-semibold text-slate-600 border-r-2 border-slate-300 bg-slate-50" style="left:64px;">pm</td>
-              <td class="px-1.5 py-1 align-top" colspan="13" class="text-center text-slate-400 italic">（暫無排班）</td>
-            </tr>
-
-            <!-- Total row -->
-            <tr class="bg-slate-100 font-bold">
-              <td class="sticky-col px-2 py-2 border-r-2 border-slate-300 bg-slate-100" colspan="2">total case</td>
-              <td class="px-2 py-2 text-center text-amber-800">15</td>
-              <td class="px-2 py-2 text-center text-amber-800">7</td>
-              <td class="px-2 py-2 text-center text-amber-800">22</td>
-              <td class="px-2 py-2 text-center text-amber-800">10</td>
-              <td class="px-2 py-2 text-center text-blue-800">4</td>
-              <td class="px-2 py-2 text-center text-blue-800">14</td>
-              <td class="px-2 py-2 text-center text-blue-800">15</td>
-              <td class="px-2 py-2 text-center text-blue-800">11</td>
-              <td class="px-2 py-2 text-center text-blue-800">9</td>
-              <td class="px-2 py-2 text-center text-blue-800">15</td>
-              <td class="px-2 py-2 text-center"></td>
-              <td class="px-2 py-2 text-center"></td>
-              <td class="px-2 py-2 text-center"></td>
-            </tr>
-          </tbody>
+          <tbody id="tableBody"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- Notes section -->
-    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div class="bg-white rounded-xl border border-slate-200 p-4">
-        <h3 class="font-bold text-sm text-slate-800 mb-2 flex items-center gap-2">
-          <i class="fa-solid fa-note-sticky text-amber-500"></i>
-          注意事項 / 協議
-        </h3>
-        <ul class="text-xs space-y-1.5 text-slate-700">
-          <li class="flex items-start gap-2">
-            <span class="w-2 h-2 mt-1.5 rounded-full bg-rose-400 flex-shrink-0"></span>
-            <span><strong>Biber protocol</strong> / <strong>Biber plus</strong> / <strong>IOPI</strong></span>
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="w-2 h-2 mt-1.5 rounded-full bg-slate-400 flex-shrink-0"></span>
-            <span>Please try to indicate which day you want to use NMES accordingly for coordination :)</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="w-2 h-2 mt-1.5 rounded-full bg-blue-400 flex-shrink-0"></span>
-            <span>IH attendance · monthly transport</span>
-          </li>
-        </ul>
-      </div>
-      <div class="bg-white rounded-xl border border-slate-200 p-4">
-        <h3 class="font-bold text-sm text-slate-800 mb-2 flex items-center gap-2">
-          <i class="fa-solid fa-chart-bar text-emerald-500"></i>
-          本週概況
-        </h3>
-        <div class="grid grid-cols-3 gap-2 text-center text-xs">
-          <div class="bg-amber-50 rounded-lg p-2 border border-amber-100">
-            <div class="text-lg font-bold text-amber-700">122</div>
-            <div class="text-slate-500">總服務節數</div>
+    <!-- 底部 Google Sheets 樣式多週切換分頁列 (Tabs 至年尾) -->
+    <div class="mt-2 bg-white rounded-xl border border-slate-300 p-2 shadow-sm flex items-center gap-1.5 overflow-x-auto no-print text-[11px]" id="weekTabsContainer">
+      <!-- JS 動態生成所有分頁 -->
+    </div>
+
+    <!-- 底部附加資訊模組 (Biber Protocol 與備註) -->
+    <div class="mt-3 grid grid-cols-1 lg:grid-cols-12 gap-3 no-print">
+      <div class="lg:col-span-8 bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="text-xs font-bold text-slate-800 mb-2.5 flex items-center gap-2">
+            <i class="fa-solid fa-file-shield text-amber-600"></i>
+            臨床協議與器材協調事項
           </div>
-          <div class="bg-emerald-50 rounded-lg p-2 border border-emerald-100">
-            <div class="text-lg font-bold text-emerald-700">12</div>
-            <div class="text-slate-500">負責職員</div>
-          </div>
-          <div class="bg-sky-50 rounded-lg p-2 border border-sky-100">
-            <div class="text-lg font-bold text-sky-700">6</div>
-            <div class="text-slate-500">工作天</div>
+          <div class="flex flex-col sm:flex-row items-start gap-4">
+            <div class="border-2 border-rose-600 p-2.5 rounded-lg flex items-center gap-3 bg-white shadow-sm flex-shrink-0">
+              <div class="flex flex-col gap-1">
+                <span class="w-6 h-4 rounded bg-purple-300 border border-purple-400 block"></span>
+                <span class="w-6 h-4 rounded bg-pink-300 border border-pink-400 block"></span>
+              </div>
+              <div class="text-xs font-black text-slate-900 leading-relaxed">
+                <div>Biber protocol</div>
+                <div>Biber plus</div>
+                <div>IOPI</div>
+              </div>
+            </div>
+            <div class="text-xs text-slate-600 space-y-1.5 pt-1">
+              <div class="font-semibold text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-info text-blue-500 text-[10px]"></i>
+                Please try to indicate which day you want to use NMES accordingly for coordination :)
+              </div>
+              <div id="dynamicNotesArea" class="text-slate-500 pl-4 space-y-1">
+                <div>• IH attendance / monthly transport</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Footer tabs mimicking original -->
-    <div class="mt-4 flex flex-wrap gap-1.5 text-[11px]">
-      <span class="px-2.5 py-1 rounded-full bg-slate-200 text-slate-700 font-medium">26-31/10/2026</span>
-      <span class="px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-500">19-24/10/2026</span>
-      <span class="px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-500">12-17/10/2026</span>
-      <span class="px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-500">5-10/10/2026</span>
-      <span class="px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-500">28/9-3/10</span>
-      <span class="px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-500">Template</span>
-      <span class="px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-500">Information</span>
+      <div class="lg:col-span-4 bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex flex-col justify-between">
+        <div class="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-chart-pie text-emerald-600"></i> 當前分頁個案負荷概況
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center my-auto">
+          <div class="bg-amber-50 rounded-lg p-2.5 border border-amber-200">
+            <div class="text-xl font-black text-amber-700" id="statTotalCases">107</div>
+            <div class="text-[10px] text-slate-500 font-semibold mt-0.5">總服務個案</div>
+          </div>
+          <div class="bg-emerald-50 rounded-lg p-2.5 border border-emerald-200">
+            <div class="text-xl font-black text-emerald-700">12</div>
+            <div class="text-[10px] text-slate-500 font-semibold mt-0.5">服務同工數</div>
+          </div>
+          <div class="bg-sky-50 rounded-lg p-2.5 border border-sky-200">
+            <div class="text-xl font-black text-sky-700">5</div>
+            <div class="text-[10px] text-slate-500 font-semibold mt-0.5">服務天數</div>
+          </div>
+        </div>
+        <div class="text-[11px] text-slate-400 text-center mt-2">
+          Lohascare Gerontech · ST Schedule Sync System
+        </div>
+      </div>
     </div>
   </main>
 
+  <!-- 儲存格編輯 Modal -->
+  <div id="editModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 flex flex-col max-h-[90vh]">
+      <div class="bg-slate-900 px-4 py-3 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-emerald-400"></i>
+          <div>
+            <h3 class="font-bold text-sm" id="editModalTitle">編輯排班內容</h3>
+            <p class="text-[10px] text-slate-400" id="editModalSubtitle">修改後會即時存入瀏覽器本機</p>
+          </div>
+        </div>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-4 overflow-y-auto flex-1 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">排班文字內容（支援換行）：</label>
+          <textarea id="editCellText" rows="5" placeholder="輸入個案名稱、時間、地點或備註..." 
+                    class="w-full text-xs font-mono p-3 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 leading-relaxed"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-2">選擇色塊類型：</label>
+          <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-xs">
+            <label class="flex flex-col items-center gap-1 p-2 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50">
+              <input type="radio" name="cellColorType" value="default" class="text-emerald-600 focus:ring-emerald-500">
+              <span class="w-5 h-5 rounded border border-slate-300 bg-amber-100"></span>
+              <span class="text-[10px] text-slate-600">一般(預設)</span>
+            </label>
+            <label class="flex flex-col items-center gap-1 p-2 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50">
+              <input type="radio" name="cellColorType" value="purple" class="text-emerald-600 focus:ring-emerald-500">
+              <span class="w-5 h-5 rounded border border-purple-400 bg-purple-200"></span>
+              <span class="text-[10px] text-slate-600">重點(粉紫)</span>
+            </label>
+            <label class="flex flex-col items-center gap-1 p-2 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50">
+              <input type="radio" name="cellColorType" value="blue" class="text-emerald-600 focus:ring-emerald-500">
+              <span class="w-5 h-5 rounded border border-blue-400 bg-blue-200"></span>
+              <span class="text-[10px] text-slate-600">藍色</span>
+            </label>
+            <label class="flex flex-col items-center gap-1 p-2 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50">
+              <input type="radio" name="cellColorType" value="yellow" class="text-emerald-600 focus:ring-emerald-500">
+              <span class="w-5 h-5 rounded border border-yellow-400 bg-yellow-200"></span>
+              <span class="text-[10px] text-slate-600">會議(鮮黃)</span>
+            </label>
+            <label class="flex flex-col items-center gap-1 p-2 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50">
+              <input type="radio" name="cellColorType" value="pink" class="text-emerald-600 focus:ring-emerald-500">
+              <span class="w-5 h-5 rounded border border-pink-400 bg-pink-200"></span>
+              <span class="text-[10px] text-slate-600">備註(粉紅)</span>
+            </label>
+            <label class="flex flex-col items-center gap-1 p-2 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50">
+              <input type="radio" name="cellColorType" value="blank" class="text-emerald-600 focus:ring-emerald-500">
+              <span class="w-5 h-5 rounded border border-slate-300 bg-white"></span>
+              <span class="text-[10px] text-slate-600">空白(白)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <span>需通知同工？可直接轉發至 WhatsApp：</span>
+          <button type="button" onclick="quickShareFromEdit()" class="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1">
+            <i class="fa-brands fa-whatsapp text-sm"></i> 轉發此格
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 px-4 py-3 border-t border-slate-200 flex items-center justify-between">
+        <button type="button" onclick="clearCurrentCell()" class="px-3 py-1.5 rounded-lg border border-rose-300 text-rose-700 hover:bg-rose-50 text-xs font-bold transition flex items-center gap-1">
+          <i class="fa-solid fa-trash-can"></i> 清空
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeEditModal()" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-xs font-semibold text-slate-700 transition">取消</button>
+          <button type="button" onclick="saveCurrentCell()" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+            <i class="fa-solid fa-check"></i> 儲存
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 同工 WhatsApp 排班彈窗 Modal -->
+  <div id="staffModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 flex flex-col max-h-[90vh]">
+      <div class="bg-emerald-700 px-4 py-3.5 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-brands fa-whatsapp text-xl"></i>
+          <div>
+            <h3 class="font-bold text-sm" id="modalStaffTitle">同工排班詳情</h3>
+            <p class="text-[10px] text-emerald-100">支援一鍵發送至 WhatsApp 或複製文字</p>
+          </div>
+        </div>
+        <button onclick="closeStaffModal()" class="text-emerald-100 hover:text-white p-1 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="p-4 overflow-y-auto flex-1 space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">接收者 WhatsApp 電話 (選填)：</label>
+          <input type="tel" id="whatsappPhoneInput" placeholder="例如：85291234567" 
+                 class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">排班預覽文字內容：</label>
+          <textarea id="modalShareText" rows="9" 
+                    class="w-full text-[11px] font-mono p-3 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 leading-relaxed"></textarea>
+        </div>
+      </div>
+      <div class="bg-slate-50 px-4 py-3 border-t border-slate-200 flex items-center justify-end gap-2">
+        <button onclick="copyModalText()" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition">
+          <i class="fa-regular fa-copy"></i> 複製文字
+        </button>
+        <button onclick="sendToWhatsappFromModal()" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+          <i class="fa-brands fa-whatsapp text-sm"></i> 發送 WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 提示 Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl text-xs font-medium z-50 flex items-center gap-2 transform translate-y-16 opacity-0 transition-all duration-300">
+    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toastMsg">成功更新並自動儲存！</span>
+  </div>
+
+  <!-- 核心 JavaScript -->
   <script>
-    // Simple search highlight
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-      const q = e.target.value.trim().toLowerCase();
-      const cells = document.querySelectorAll('#tableBody td');
-      cells.forEach(td => {
-        const text = td.textContent.toLowerCase();
-        if (q && text.includes(q)) {
-          td.style.outline = '2px solid #10b981';
-          td.style.outlineOffset = '-2px';
+    const STORAGE_PREFIX = 'ST_SCHEDULE_WEEK_';
+    const CURRENT_WEEK_KEY = 'ST_CURRENT_ACTIVE_WEEK';
+
+    // 擴充至 2026 年底之所有分頁清單
+    const allWeekTabs = [
+      { id: '28/9-3/10', title: '28/9-3/10', isSpecial: false },
+      { id: '5-10/10/2026', title: '5-10/10/2026', isSpecial: false },
+      { id: '12-17/10/2026', title: '12-17/10/2026', isSpecial: false },
+      { id: '19-24/10/2026', title: '19-24/10/2026', isSpecial: false },
+      { id: '26-31/10/2026', title: '26-31/10/2026', isSpecial: false, isCurrent: true },
+      { id: '2-7/11/2026', title: '2-7/11/2026', isSpecial: false },
+      { id: '9-14/11/2026', title: '9-14/11/2026', isSpecial: false },
+      { id: '16-21/11/2026', title: '16-21/11/2026', isSpecial: false },
+      { id: '23-28/11/2026', title: '23-28/11/2026', isSpecial: false },
+      { id: '30/11-5/12/2026', title: '30/11-5/12/2026', isSpecial: false },
+      { id: '7-12/12/2026', title: '7-12/12/2026', isSpecial: false },
+      { id: '14-19/12/2026', title: '14-19/12/2026', isSpecial: false },
+      { id: '21-26/12/2026', title: '21-26/12/2026', isSpecial: false },
+      { id: '28-31/12/2026', title: '28-31/12/2026', isSpecial: false },
+      { id: 'Template', title: 'Template', isSpecial: true },
+      { id: 'Information', title: 'Information', isSpecial: true }
+    ];
+
+    let currentActiveWeek = localStorage.getItem(CURRENT_WEEK_KEY) || '26-31/10/2026';
+
+    // 職員名單與基底色
+    const staffList = [
+      { name: 'Nanette', baseClass: 'col-orange-base', textClass: 'text-amber-950', colIndex: 3 },
+      { name: 'Tammy', baseClass: 'col-white-base', textClass: 'text-slate-900', colIndex: 4 },
+      { name: 'Dorothy', baseClass: 'col-orange-base', textClass: 'text-amber-950', colIndex: 5 },
+      { name: 'Kelvin', baseClass: 'col-white-base', textClass: 'text-slate-900', colIndex: 6 },
+      { name: 'Matthew', baseClass: 'col-orange-base', textClass: 'text-amber-950', colIndex: 7 },
+      { name: 'Christy', baseClass: 'col-white-base', textClass: 'text-slate-900', colIndex: 8 },
+      { name: 'Bibianna', baseClass: 'col-orange-base', textClass: 'text-amber-950', colIndex: 9 },
+      { name: 'Tina', baseClass: 'col-white-base', textClass: 'text-sky-700', colIndex: 10 },
+      { name: 'Jason', baseClass: 'col-orange-base', textClass: 'text-amber-950', colIndex: 11 },
+      { name: 'Martina', baseClass: 'col-white-base', textClass: 'text-slate-900', colIndex: 12 },
+      { name: 'Allen', baseClass: 'col-blue-base', textClass: 'text-blue-950', colIndex: 13 },
+      { name: 'Fish', baseClass: 'col-blue-base', textClass: 'text-blue-950', colIndex: 14 },
+      { name: '其他 / 備註', baseClass: 'bg-slate-50', textClass: 'text-slate-700', colIndex: 15 }
+    ];
+
+    // ========================================================
+    // 精確「星期幾 ➜ 幾月幾日」日期字典計算邏輯
+    // ========================================================
+    function getWeekDayDateMap(weekId) {
+      // 針對常見週次定義直接返回精確中文字串
+      const fixedMaps = {
+        '28/9-3/10': { '一': '9月28日', '二': '9月29日', '三': '9月30日', '四': '10月1日', '五': '10月2日', '六': '10月3日' },
+        '5-10/10/2026': { '一': '10月5日', '二': '10月6日', '三': '10月7日', '四': '10月8日', '五': '10月9日', '六': '10月10日' },
+        '12-17/10/2026': { '一': '10月12日', '二': '10月13日', '三': '10月14日', '四': '10月15日', '五': '10月16日', '六': '10月17日' },
+        '19-24/10/2026': { '一': '10月19日', '二': '10月20日', '三': '10月21日', '四': '10月22日', '五': '10月23日', '六': '10月24日' },
+        '26-31/10/2026': { '一': '10月26日', '二': '10月27日', '三': '10月28日', '四': '10月29日', '五': '10月30日', '六': '10月31日' },
+        '2-7/11/2026': { '一': '11月2日', '二': '11月3日', '三': '11月4日', '四': '11月5日', '五': '11月6日', '六': '11月7日' },
+        '9-14/11/2026': { '一': '11月9日', '二': '11月10日', '三': '11月11日', '四': '11月12日', '五': '11月13日', '六': '11月14日' },
+        '16-21/11/2026': { '一': '11月16日', '二': '11月17日', '三': '11月18日', '四': '11月19日', '五': '11月20日', '六': '11月21日' },
+        '23-28/11/2026': { '一': '11月23日', '二': '11月24日', '三': '11月25日', '四': '11月26日', '五': '11月27日', '六': '11月28日' },
+        '30/11-5/12/2026': { '一': '11月30日', '二': '12月1日', '三': '12月2日', '四': '12月3日', '五': '12月4日', '六': '12月5日' },
+        '7-12/12/2026': { '一': '12月7日', '二': '12月8日', '三': '12月9日', '四': '12月10日', '五': '12月11日', '六': '12月12日' },
+        '14-19/12/2026': { '一': '12月14日', '二': '12月15日', '三': '12月16日', '四': '12月17日', '五': '12月18日', '六': '12月19日' },
+        '21-26/12/2026': { '一': '12月21日', '二': '12月22日', '三': '12月23日', '四': '12月24日', '五': '12月25日', '六': '12月26日' },
+        '28-31/12/2026': { '一': '12月28日', '二': '12月29日', '三': '12月30日', '四': '12月31日', '五': '1月1日', '六': '1月2日' }
+      };
+
+      if (fixedMaps[weekId]) return fixedMaps[weekId];
+
+      // 特殊頁預設
+      return { '一': '星期一', '二': '星期二', '三': '星期三', '四': '星期四', '五': '星期五', '六': '星期六' };
+    }
+
+    // ==========================================
+    // 內建資料庫 (涵蓋使用者截圖真實排班)
+    // ==========================================
+
+    // 1. 26-31/10/2026
+    const builtIn_26_31_Oct = {
+      "mon_am_Nanette": { text: "城市\n3 AL", color: "default" },
+      "mon_am_Tammy": { text: "", color: "default" },
+      "mon_am_Dorothy": { text: "錦勝\n3 松心香 (2/F)", color: "purple" },
+      "mon_am_Kelvin": { text: "5 康柏軒", color: "default" },
+      "mon_am_Matthew": { text: "4 陽光\nSL", color: "default" },
+      "mon_am_Christy": { text: "", color: "default" },
+      "mon_am_Bibianna": { text: "騰達\nsarc dsg screen", color: "default" },
+      "mon_am_Tina": { text: "2 英皇", color: "default" },
+      "mon_am_Jason": { text: "2 P260672 1000", color: "default" },
+      "mon_am_Martina": { text: "騰達 w/ Bibianna\n5\n2 new", color: "default" },
+      "mon_am_Allen": { text: "SL", color: "default" },
+      "mon_am_Fish": { text: "", color: "default" },
+      "mon_am_other": { text: "Bibianna\nSarcopenic DSG screening pack", color: "pink" },
+
+      "mon_pm_Nanette": { text: "城市\n2\nCSY carer & TWP meal ob", color: "default" },
+      "mon_pm_Tammy": { text: "", color: "default" },
+      "mon_pm_Dorothy": { text: "GC visit (check equip)\nM4384@深灣1600", color: "default" },
+      "mon_pm_Kelvin": { text: "Health service meeting@MOSTE", color: "default" },
+      "mon_pm_Matthew": { text: "", color: "default" },
+      "mon_pm_Christy": { text: "", color: "default" },
+      "mon_pm_Bibianna": { text: "PM CL", color: "default" },
+      "mon_pm_Tina": { text: "", color: "default" },
+      "mon_pm_Jason": { text: "P260668 1600", color: "default" },
+      "mon_pm_Martina": { text: "type progress sum for OPD FU\nVGreen proj", color: "default" },
+      "mon_pm_Allen": { text: "VGreen proj", color: "default" },
+      "mon_pm_Fish": { text: "", color: "default" },
+      "mon_pm_other": { text: "", color: "default" },
+
+      "tue_am_Nanette": { text: "福恩\n2 CPL\nFU research, 5 participants", color: "default" },
+      "tue_am_Tammy": { text: "", color: "default" },
+      "tue_am_Dorothy": { text: "仁和居\n8", color: "purple" },
+      "tue_am_Kelvin": { text: "Prepare health meeti EH MFA 1100\nPrepare ASTRA", color: "default" },
+      "tue_am_Matthew": { text: "安樂\n4", color: "default" },
+      "tue_am_Christy": { text: "4 樂怡", color: "default" },
+      "tue_am_Bibianna": { text: "2 Q260514 (Wah Kwai TR, 1000)\nQ260375 (Wah Fu, 1100)", color: "default" },
+      "tue_am_Tina": { text: "護老樂(富怡)\nH3-003", color: "default" },
+      "tue_am_Jason": { text: "2 T蓮香1500", color: "default" },
+      "tue_am_Martina": { text: "仁和居\n2", color: "default" },
+      "tue_am_Allen": { text: "2 T蓮香1500", color: "default" },
+      "tue_am_Fish": { text: "仁和居", color: "default" },
+      "tue_am_other": { text: "", color: "default" },
+
+      "tue_pm_Nanette": { text: "", color: "default" },
+      "tue_pm_Tammy": { text: "", color: "default" },
+      "tue_pm_Dorothy": { text: "", color: "default" },
+      "tue_pm_Kelvin": { text: "TWGHs發布會", color: "default" },
+      "tue_pm_Matthew": { text: "Doc", color: "default" },
+      "tue_pm_Christy": { text: "T蓮香1500\nSQS prep 1630", color: "default" },
+      "tue_pm_Bibianna": { text: "順福\n2\n1600 off", color: "default" },
+      "tue_pm_Tina": { text: "", color: "default" },
+      "tue_pm_Jason": { text: "P260542 1400\nP260673 1600", color: "default" },
+      "tue_pm_Martina": { text: "環翠\n2\nVGreen proj", color: "default" },
+      "tue_pm_Allen": { text: "VGreen proj", color: "default" },
+      "tue_pm_Fish": { text: "", color: "default" },
+      "tue_pm_other": { text: "", color: "default" },
+
+      "wed_am_Nanette": { text: "耆恩\n4", color: "default" },
+      "wed_am_Tammy": { text: "雅明\n3\nw/ mst student", color: "default" },
+      "wed_am_Dorothy": { text: "富璟\n6", color: "default" },
+      "wed_am_Kelvin": { text: "Prepare health meeti", color: "default" },
+      "wed_am_Matthew": { text: "保良\n8", color: "default" },
+      "wed_am_Christy": { text: "達源\n4", color: "default" },
+      "wed_am_Bibianna": { text: "匯豐 Vital stim\n5", color: "default" },
+      "wed_am_Tina": { text: "金華 new cases\n6\nCall Q260639", color: "default" },
+      "wed_am_Jason": { text: "護老樂\n4", color: "default" },
+      "wed_am_Martina": { text: "W尤菊 rv 1000\nY秀芳 rv 1200", color: "default" },
+      "wed_am_Allen": { text: "保良", color: "default" },
+      "wed_am_Fish": { text: "金華", color: "default" },
+      "wed_am_other": { text: "", color: "default" },
+
+      "wed_pm_Nanette": { text: "", color: "default" },
+      "wed_pm_Tammy": { text: "", color: "default" },
+      "wed_pm_Dorothy": { text: "MCCC LTH 1430@N\nnew Ax@KLC 16:15", color: "default" },
+      "wed_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nHealth service meeting@HQ\nKM meeting 1600", color: "default" },
+      "wed_pm_Matthew": { text: "", color: "default" },
+      "wed_pm_Christy": { text: "", color: "default" },
+      "wed_pm_Bibianna": { text: "1600 off", color: "default" },
+      "wed_pm_Tina": { text: "Q251005 (Aberdeen, P260682 1400)\nQ260657 (Wah Kwai, 1530)\nQ260455 (Wah Fu, 1600)", color: "default" },
+      "wed_pm_Jason": { text: "P260682 1400", color: "default" },
+      "wed_pm_Martina": { text: "VGreen meeting 1730\nKM meeting 1600", color: "default" },
+      "wed_pm_Allen": { text: "", color: "default" },
+      "wed_pm_Fish": { text: "", color: "default" },
+      "wed_pm_other": { text: "", color: "default" },
+
+      "thu_am_Nanette": { text: "耆安\n4", color: "default" },
+      "thu_am_Tammy": { text: "松齡\n4", color: "default" },
+      "thu_am_Dorothy": { text: "雋康頤庭\n5\ndiet spot check", color: "purple" },
+      "thu_am_Kelvin": { text: "綠山居\n5", color: "default" },
+      "thu_am_Matthew": { text: "AL AM", color: "default" },
+      "thu_am_Christy": { text: "聖德\n6", color: "purple" },
+      "thu_am_Bibianna": { text: "樂怡\n1\n匯豐\n1", color: "default" },
+      "thu_am_Tina": { text: "Back at 10am\nQ260447 (Sheung Wan, 1000)", color: "default" },
+      "thu_am_Jason": { text: "康悅\n5", color: "default" },
+      "thu_am_Martina": { text: "高高\n2", color: "default" },
+      "thu_am_Allen": { text: "聖德", color: "default" },
+      "thu_am_Fish": { text: "康悅", color: "default" },
+      "thu_am_other": { text: "", color: "default" },
+
+      "thu_pm_Nanette": { text: "", color: "default" },
+      "thu_pm_Tammy": { text: "MWC(CKC@AR4)", color: "default" },
+      "thu_pm_Dorothy": { text: "H57-003", color: "default" },
+      "thu_pm_Kelvin": { text: "", color: "default" },
+      "thu_pm_Matthew": { text: "木星\n2", color: "default" },
+      "thu_pm_Christy": { text: "SQS prep 1530", color: "default" },
+      "thu_pm_Bibianna": { text: "樂悠居\n2", color: "default" },
+      "thu_pm_Tina": { text: "康盛 2\n馬寶 1", color: "default" },
+      "thu_pm_Jason": { text: "", color: "default" },
+      "thu_pm_Martina": { text: "瑞安\n3\nH57-004", color: "purple" },
+      "thu_pm_Allen": { text: "2:45pm off", color: "default" },
+      "thu_pm_Fish": { text: "", color: "default" },
+      "thu_pm_other": { text: "", color: "default" },
+
+      "fri_am_Nanette": { text: "逸柏軒\nFU research", color: "default" },
+      "fri_am_Tammy": { text: "開美 LYS meal obs", color: "default" },
+      "fri_am_Dorothy": { text: "", color: "default" },
+      "fri_am_Kelvin": { text: "GMGC interview 11:00", color: "default" },
+      "fri_am_Matthew": { text: "真光", color: "default" },
+      "fri_am_Christy": { text: "杏恩\n耀東", color: "default" },
+      "fri_am_Bibianna": { text: "翠灣\n[prep screen list]", color: "default" },
+      "fri_am_Tina": { text: "Q260640 (Mid levels, 1030)\n樂善\n樂家", color: "default" },
+      "fri_am_Jason": { text: "天龍\nP260676 1600\nFU P260638", color: "default" },
+      "fri_am_Martina": { text: "4 docs\nVGreen deadline", color: "default" },
+      "fri_am_Allen": { text: "", color: "default" },
+      "fri_am_Fish": { text: "灣仔\nSL", color: "default" },
+      "fri_am_other": { text: "", color: "default" },
+
+      "fri_pm_Nanette": { text: "", color: "default" },
+      "fri_pm_Tammy": { text: "", color: "default" },
+      "fri_pm_Dorothy": { text: "", color: "default" },
+      "fri_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nMWC (WYH@KTown, 1530)", color: "default" },
+      "fri_pm_Matthew": { text: "", color: "default" },
+      "fri_pm_Christy": { text: "", color: "default" },
+      "fri_pm_Bibianna": { text: "", color: "default" },
+      "fri_pm_Tina": { text: "", color: "default" },
+      "fri_pm_Jason": { text: "", color: "default" },
+      "fri_pm_Martina": { text: "聖輝 PO\n1", color: "default" },
+      "fri_pm_Allen": { text: "", color: "default" },
+      "fri_pm_Fish": { text: "", color: "default" },
+      "fri_pm_other": { text: "", color: "default" },
+
+      "total_Nanette": { text: "19", color: "default" },
+      "total_Tammy": { text: "7", color: "default" },
+      "total_Dorothy": { text: "22", color: "default" },
+      "total_Kelvin": { text: "10", color: "default" },
+      "total_Matthew": { text: "14", color: "default" },
+      "total_Christy": { text: "14", color: "default" },
+      "total_Bibianna": { text: "15", color: "default" },
+      "total_Tina": { text: "11", color: "default" },
+      "total_Jason": { text: "13", color: "default" },
+      "total_Martina": { text: "15", color: "default" },
+      "total_Allen": { text: "", color: "default" },
+      "total_Fish": { text: "", color: "default" },
+      "total_other": { text: "", color: "default" }
+    };
+
+    // 2. 2-7/11/2026
+    const builtIn_2_7_Nov = {
+      "mon_am_Tammy": { text: "松齡\nallen", color: "default" },
+      "mon_am_Dorothy": { text: "錦勝", color: "purple" },
+      "mon_am_Kelvin": { text: "松心薈 (1/F new)", color: "default" },
+      "mon_am_Matthew": { text: "瑞康", color: "default" },
+      "mon_am_Christy": { text: "陽光", color: "default" },
+      "mon_am_Bibianna": { text: "騰達\nsarc dsg screen", color: "default" },
+      "mon_am_Tina": { text: "Idsp ktown 0900", color: "default" },
+      "mon_am_Jason": { text: "天龍", color: "default" },
+      "mon_am_Martina": { text: "騰達 w/ Bibianna\n9\n2 new", color: "default" },
+      "mon_am_other": { text: "Sarcopenic DSG screening pack\nBibianna", color: "pink" },
+
+      "mon_pm_Kelvin": { text: "CBRC new@NP 14:00", color: "default" },
+      "mon_pm_Tina": { text: "英皇", color: "default" },
+
+      "tue_am_Nanette": { text: "福恩\nFU research", color: "default" },
+      "tue_am_Tammy": { text: "康福(太安樓) 1 new\n麗濤 2 new", color: "default" },
+      "tue_am_Dorothy": { text: "仁和居", color: "purple" },
+      "tue_am_Kelvin": { text: "松山府邸 (2/F new)", color: "default" },
+      "tue_am_Matthew": { text: "ED MLC 1130", color: "default" },
+      "tue_am_Christy": { text: "安樂", color: "default" },
+      "tue_am_Bibianna": { text: "樂怡 Vital stim\n0900 LWH CWY WCK", color: "default" },
+      "tue_am_Martina": { text: "護老樂(富怡)\n5\n3 new", color: "default" },
+
+      "tue_pm_Tammy": { text: "MWC(CIW@SSW)\n14:00", color: "default" },
+      "tue_pm_Kelvin": { text: "LT Meeting", color: "default" },
+      "tue_pm_Christy": { text: "T蓮香1500", color: "default" },
+      "tue_pm_Bibianna": { text: "順福 1030\n1630 off", color: "default" },
+      "tue_pm_Martina": { text: "瑞安\n1", color: "purple" },
+
+      "wed_am_Nanette": { text: "耆恩\nHKL carer 1000", color: "default" },
+      "wed_am_Tammy": { text: "雅明\nw/ mst student + iris", color: "default" },
+      "wed_am_Dorothy": { text: "富璟", color: "default" },
+      "wed_am_Kelvin": { text: "綠山居", color: "default" },
+      "wed_am_Matthew": { text: "?ED LYK 0900", color: "default" },
+      "wed_am_Christy": { text: "達源", color: "default" },
+      "wed_am_Bibianna": { text: "匯豐 Vital stim\nLLC 0900 LWH 0930\nFKH WMW CKF 1130\n1600 off", color: "default" },
+      "wed_am_Martina": { text: "康福(東大街)\n2 new", color: "default" },
+
+      "wed_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nDH webinar (15:00)", color: "default" },
+
+      "thu_am_Tammy": { text: "西亞", color: "default" },
+      "thu_am_Dorothy": { text: "10:15 OEP@松齡", color: "purple" },
+      "thu_am_Kelvin": { text: "KM meeting 09:30\n康雅八 (new)\n崇恩\n?M3672@WC", color: "default" },
+      "thu_am_Matthew": { text: "康悅\nsarc dsg screening\n?ED YYK 1615", color: "default" },
+      "thu_am_Christy": { text: "聖德", color: "purple" },
+      "thu_am_Bibianna": { text: "雁豐\n0900 KSF MSK Meal", color: "default" },
+      "thu_am_Martina": { text: "KM meeting 09:30", color: "default" },
+
+      "thu_pm_Tammy": { text: "MWC(CKC@AR4)\n14:30", color: "default" },
+      "thu_pm_Bibianna": { text: "樂悠居", color: "default" },
+      "thu_pm_Martina": { text: "環翠 1 new\n3", color: "default" },
+
+      "fri_am_Tammy": { text: "開美\nfish", color: "default" },
+      "fri_am_Dorothy": { text: "雋康頤庭\nchanMY?", color: "purple" },
+      "fri_am_Kelvin": { text: "MRC", color: "default" },
+      "fri_am_Matthew": { text: "真光", color: "default" },
+      "fri_am_Christy": { text: "杏恩\n耀東", color: "default" },
+      "fri_am_Bibianna": { text: "翠灣 CMK 0900", color: "default" },
+      "fri_am_Martina": { text: "?高高", color: "default" },
+
+      "fri_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nMWC (WYH@KTown, 1530)", color: "default" },
+      "fri_pm_Bibianna": { text: "PM AL", color: "default" },
+
+      "sat_am_Nanette": { text: "1430-1630@GC\nOEP 軟餐workshop", color: "purple" },
+      "sat_am_Dorothy": { text: "1430-1630@GC\nOEP 軟餐workshop", color: "purple" },
+
+      "total_Nanette": { text: "0", color: "default" },
+      "total_Tammy": { text: "0", color: "default" },
+      "total_Dorothy": { text: "0", color: "default" },
+      "total_Kelvin": { text: "0", color: "default" },
+      "total_Matthew": { text: "0", color: "default" },
+      "total_Christy": { text: "0", color: "default" },
+      "total_Bibianna": { text: "0", color: "default" },
+      "total_Tina": { text: "0", color: "default" },
+      "total_Jason": { text: "0", color: "default" },
+      "total_Martina": { text: "0", color: "default" },
+      "total_Allen": { text: "18", color: "default" },
+      "total_Fish": { text: "0", color: "default" }
+    };
+
+    // 3. 9-14/11/2026
+    const builtIn_9_14_Nov = {
+      "mon_am_Nanette": { text: "老友所為 visit", color: "default" },
+      "mon_am_Tammy": { text: "松齡\nallen", color: "default" },
+      "mon_am_Kelvin": { text: "松心薈 (3/F)", color: "default" },
+      "mon_am_Christy": { text: "陽光", color: "default" },
+      "mon_pm_Martina": { text: "承坤 monthly rv 1300", color: "default" },
+
+      "tue_am_Tammy": { text: "麗濤\n恩慈", color: "default" },
+      "tue_am_Kelvin": { text: "CFSS meeting@10:00", color: "default" },
+      "tue_am_Christy": { text: "LSCC 1100", color: "default" },
+      "tue_pm_Tammy": { text: "MWC(CIW@SSW)\n14:00", color: "default" },
+      "tue_pm_Kelvin": { text: "MRCV131@WC 13:30", color: "default" },
+      "tue_pm_Christy": { text: "T蓮香1500", color: "default" },
+
+      "wed_am_Tammy": { text: "雅明\nw/ mst student", color: "default" },
+      "wed_am_Kelvin": { text: "綠山居", color: "default" },
+      "wed_pm_Dorothy": { text: "MCCC LTH 1430@N", color: "default" },
+      "wed_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)", color: "default" },
+      "wed_pm_Bibianna": { text: "PM CL", color: "default" },
+
+      "thu_am_Kelvin": { text: "康雅四 2 AL\n康雅七(new) 2\n芳芳(new) 2", color: "default" },
+      "thu_am_Christy": { text: "聖德", color: "purple" },
+      "thu_pm_Tammy": { text: "MWC(CKC@AR4)\n14:30", color: "default" },
+
+      "fri_am_Tammy": { text: "開美\nfish", color: "default" },
+      "fri_am_Kelvin": { text: "ASTRA", color: "default" },
+      "fri_am_Matthew": { text: "AL", color: "default" },
+      "fri_am_Bibianna": { text: "華人地區長期照護會議\n0830-1800", color: "default" },
+      "fri_am_Martina": { text: "聖輝 PO", color: "default" },
+      "fri_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nMWC (WYH@KTown, 1530)", color: "default" },
+
+      "sat_am_Bibianna": { text: "華人地區長期照護會議\n0830-1800", color: "default" },
+      "sat_am_Jason": { text: "17/11精神健康專業評估及治療介入\nFU P260673 second rv", color: "default" },
+
+      "total_Nanette": { text: "0", color: "default" },
+      "total_Tammy": { text: "0", color: "default" },
+      "total_Dorothy": { text: "0", color: "default" },
+      "total_Kelvin": { text: "6", color: "default" },
+      "total_Matthew": { text: "0", color: "default" },
+      "total_Christy": { text: "0", color: "default" },
+      "total_Bibianna": { text: "0", color: "default" },
+      "total_Tina": { text: "0", color: "default" },
+      "total_Jason": { text: "0", color: "default" },
+      "total_Martina": { text: "0", color: "default" },
+      "total_Allen": { text: "0", color: "default" },
+      "total_Fish": { text: "0", color: "default" }
+    };
+
+    let currentSchedule = {};
+    let activeCellKey = null;
+
+    // 載入指定週
+    function loadWeekData(weekId) {
+      currentActiveWeek = weekId;
+      localStorage.setItem(CURRENT_WEEK_KEY, weekId);
+      document.getElementById('currentWeekBadge').innerText = weekId;
+
+      const raw = localStorage.getItem(STORAGE_PREFIX + weekId);
+      if (raw) {
+        try {
+          currentSchedule = JSON.parse(raw);
+        } catch(e) {
+          currentSchedule = {};
+        }
+      } else {
+        if (weekId === '26-31/10/2026') {
+          currentSchedule = JSON.parse(JSON.stringify(builtIn_26_31_Oct));
+        } else if (weekId === '2-7/11/2026') {
+          currentSchedule = JSON.parse(JSON.stringify(builtIn_2_7_Nov));
+        } else if (weekId === '9-14/11/2026') {
+          currentSchedule = JSON.parse(JSON.stringify(builtIn_9_14_Nov));
         } else {
-          td.style.outline = '';
+          currentSchedule = {};
+          staffList.forEach(s => {
+            const isOther = s.name === '其他 / 備註';
+            currentSchedule[`total_${isOther ? 'other' : s.name}`] = { text: "0", color: "default" };
+          });
+        }
+      }
+
+      renderTabs();
+      renderTable();
+      calculateOverview();
+      updateDynamicNotes();
+    }
+
+    function persistCurrentWeekData() {
+      localStorage.setItem(STORAGE_PREFIX + currentActiveWeek, JSON.stringify(currentSchedule));
+      renderTable();
+      calculateOverview();
+    }
+
+    function resetCurrentWeekData() {
+      if (confirm(`確定要將「${currentActiveWeek}」分頁還原成最初資料嗎？`)) {
+        if (currentActiveWeek === '26-31/10/2026') {
+          currentSchedule = JSON.parse(JSON.stringify(builtIn_26_31_Oct));
+        } else if (currentActiveWeek === '2-7/11/2026') {
+          currentSchedule = JSON.parse(JSON.stringify(builtIn_2_7_Nov));
+        } else if (currentActiveWeek === '9-14/11/2026') {
+          currentSchedule = JSON.parse(JSON.stringify(builtIn_9_14_Nov));
+        } else {
+          currentSchedule = {};
+          staffList.forEach(s => {
+            const isOther = s.name === '其他 / 備註';
+            currentSchedule[`total_${isOther ? 'other' : s.name}`] = { text: "0", color: "default" };
+          });
+        }
+        persistCurrentWeekData();
+        showToast(`已還原 ${currentActiveWeek}！`);
+      }
+    }
+
+    function updateDynamicNotes() {
+      const area = document.getElementById('dynamicNotesArea');
+      if (currentActiveWeek === '2-7/11/2026') {
+        area.innerHTML = `
+          <div>• Q260381 (Mid-levels, 1430) | Q260514 d/c?</div>
+          <div>• book IH: L靜心 monthly rv</div>
+          <div>• IH attendance / monthly transport</div>
+        `;
+      } else if (currentActiveWeek === '9-14/11/2026') {
+        area.innerHTML = `
+          <div>• Q260650 syp d/c yet?</div>
+          <div>• Q260657 (Wah Kwai, 1530) | Q260455 (Wah Fu, 1600)</div>
+          <div>• IH attendance / monthly transport</div>
+        `;
+      } else {
+        area.innerHTML = `<div>• IH attendance / monthly transport</div>`;
+      }
+    }
+
+    // 渲染 Tabs
+    function renderTabs() {
+      const container = document.getElementById('weekTabsContainer');
+      container.innerHTML = `
+        <div class="flex items-center text-slate-400 px-1 font-bold">
+          <i class="fa-solid fa-folder-tree mr-1"></i> 分頁：
+        </div>
+      `;
+
+      allWeekTabs.forEach(tab => {
+        const btn = document.createElement('button');
+        const isActive = tab.id === currentActiveWeek;
+        btn.className = `tab-btn px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 shadow-sm ${
+          isActive 
+            ? 'active bg-emerald-600 text-white border-emerald-600' 
+            : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
+        }`;
+        
+        let iconHtml = '<i class="fa-regular fa-calendar text-[10px]"></i>';
+        if (tab.isSpecial) iconHtml = '<i class="fa-solid fa-bookmark text-[10px] text-amber-500"></i>';
+        if (tab.id.includes('12/2026')) iconHtml = '<i class="fa-solid fa-snowflake text-[10px] text-sky-500"></i>';
+
+        btn.innerHTML = `${iconHtml}<span>${tab.title}</span>`;
+        btn.onclick = () => loadWeekData(tab.id);
+
+        container.appendChild(btn);
+      });
+    }
+
+    // 時段定義
+    const timeSlots = [
+      { day: '一', slot: 'am', dayColor: 'text-rose-600', isFirstOfDay: true, sheetRow: 2 },
+      { day: '一', slot: 'pm', dayColor: 'text-rose-600', isFirstOfDay: false, sheetRow: 4 },
+      { day: '二', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true, sheetRow: 6 },
+      { day: '二', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false, sheetRow: 9 },
+      { day: '三', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true, sheetRow: 11 },
+      { day: '三', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false, sheetRow: 13 },
+      { day: '四', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true, sheetRow: 16 },
+      { day: '四', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false, sheetRow: 19 },
+      { day: '五', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true, sheetRow: 21 },
+      { day: '五', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false, sheetRow: 24 },
+      { day: '六', slot: 'am', dayColor: 'text-sky-600', isFirstOfDay: true, isOff: false, sheetRow: 26 },
+      { day: '六', slot: 'pm', dayColor: 'text-sky-600', isFirstOfDay: false, isOff: false, sheetRow: 27 }
+    ];
+
+    function getDayKey(chineseDay) {
+      const map = { '一': 'mon', '二': 'tue', '三': 'wed', '四': 'thu', '五': 'fri', '六': 'sat' };
+      return map[chineseDay] || 'mon';
+    }
+
+    // 渲染表格內容（精確匹配幾月幾日）
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      // 取得當前週的精確日期對照表
+      const dateMap = getWeekDayDateMap(currentActiveWeek);
+
+      timeSlots.forEach((slotInfo) => {
+        const dKey = getDayKey(slotInfo.day);
+
+        // 僅在 26-31/10/2026 週五上午前插入工作坊
+        if (currentActiveWeek === '26-31/10/2026' && dKey === 'fri' && slotInfo.slot === 'am') {
+          const workshopTr = document.createElement('tr');
+          workshopTr.className = "cell-type-yellow";
+          workshopTr.innerHTML = `
+            <td class="sticky-col-date cell-type-yellow px-2 py-1 text-center font-black text-amber-950 border-r-2 border-slate-300">五</td>
+            <td class="sticky-col-time cell-type-yellow px-1 py-1 text-center font-bold text-amber-950 border-r-2 border-slate-300">特別</td>
+            <td colspan="10" class="cell-type-yellow px-3 py-1.5 text-center font-black text-amber-950 tracking-wider">
+              MOSTE 「策略創新工作坊」 16:30-18:00
+            </td>
+            <td class="col-blue-base"></td>
+            <td class="col-blue-base"></td>
+            <td class="cell-type-yellow px-2 py-1 text-center font-bold text-amber-900 text-[10px]">16:30-18:00</td>
+          `;
+          tbody.appendChild(workshopTr);
+        }
+
+        const tr = document.createElement('tr');
+
+        // 日期欄：精準顯示星期與對應幾月幾日
+        if (slotInfo.isFirstOfDay) {
+          const tdDate = document.createElement('td');
+          tdDate.className = "sticky-col-date bg-white px-1.5 py-2 font-bold text-slate-800 text-center border-r-2 border-slate-300 align-top";
+          tdDate.rowSpan = 2;
+          const fullDateStr = dateMap[slotInfo.day] || '';
+          tdDate.innerHTML = `
+            <div class="${slotInfo.dayColor} text-sm font-black">${slotInfo.day}</div>
+            <div class="text-[10px] text-slate-600 font-semibold leading-tight mt-0.5">${fullDateStr}</div>
+          `;
+          tr.appendChild(tdDate);
+        }
+
+        // 時段欄
+        const tdSlot = document.createElement('td');
+        tdSlot.className = "sticky-col-time bg-slate-50 px-1 py-1.5 text-center font-bold text-slate-600 border-r-2 border-slate-300";
+        tdSlot.innerText = slotInfo.slot;
+        tr.appendChild(tdSlot);
+
+        // 渲染 13 個同工欄
+        staffList.forEach(staff => {
+          const isOther = staff.name === '其他 / 備註';
+          const staffKeyName = isOther ? 'other' : staff.name;
+          const cellKey = `${dKey}_${slotInfo.slot}_${staffKeyName}`;
+          const cellData = currentSchedule[cellKey] || { text: '', color: 'default' };
+
+          const td = document.createElement('td');
+          td.dataset.cellKey = cellKey;
+          td.dataset.staff = staff.name;
+          td.dataset.time = `${dateMap[slotInfo.day]} (${slotInfo.day}) ${slotInfo.slot.toUpperCase()}`;
+          td.dataset.sheetRow = slotInfo.sheetRow;
+          td.dataset.sheetCol = staff.colIndex;
+          td.className = `px-2 py-1.5 align-top editable-cell ${getColorClass(cellData.color, staff.baseClass)}`;
+
+          td.innerHTML = formatCellHTML(cellData.text, staff.textClass);
+          td.onclick = () => openEditModal(cellKey, staff.name, td.dataset.time, slotInfo.sheetRow, staff.colIndex);
+
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      });
+
+      // Total Case 總數行
+      const totalTr = document.createElement('tr');
+      totalTr.className = "bg-excelBlue font-black text-slate-900";
+      totalTr.innerHTML = `
+        <td colspan="2" class="sticky-col-date bg-excelBlue px-3 py-2.5 text-center border-r-2 border-slate-300 uppercase tracking-wider text-xs">
+          total case
+        </td>
+      `;
+
+      staffList.forEach(staff => {
+        const isOther = staff.name === '其他 / 備註';
+        const staffKeyName = isOther ? 'other' : staff.name;
+        const totalKey = `total_${staffKeyName}`;
+        const totalData = currentSchedule[totalKey] || { text: '0', color: 'default' };
+
+        const totalTd = document.createElement('td');
+        totalTd.className = `px-2 py-2.5 text-center font-black text-sm editable-cell ${getColorClass(totalData.color, staff.baseClass)}`;
+        totalTd.innerText = totalData.text || '0';
+        totalTd.title = "點擊可修改個案總數";
+        totalTd.onclick = () => openEditModal(totalKey, `${staff.name} 總計`, '本週 Total Cases', 30, staff.colIndex);
+
+        totalTr.appendChild(totalTd);
+      });
+
+      tbody.appendChild(totalTr);
+    }
+
+    function formatCellHTML(text, defaultTextColor) {
+      if (!text || !text.trim()) return '';
+      const lines = text.split('\n');
+      return lines.map((line, idx) => {
+        let trimmed = line.trim();
+        if (trimmed.includes('[prep screen list]')) {
+          return `<div class="mt-1 inline-block border-2 border-emerald-500 rounded bg-emerald-50 px-1 py-0.5 text-[9px] text-emerald-800 font-bold">prep screen list</div>`;
+        }
+        const isRed = trimmed.includes('new Ax@KLC') || trimmed.includes('MWC(CKC@AR4)') || trimmed.includes('FU P260638') || trimmed.includes('FU P260673');
+        const isStrikethrough = trimmed.includes('KM meeting 1600') && trimmed.length < 20;
+
+        let lineClass = isRed ? 'text-rose-600 font-bold' : (idx === 0 ? `font-bold ${defaultTextColor}` : 'text-slate-700 font-medium');
+        if (isStrikethrough) lineClass += ' line-through';
+
+        return `<div class="${lineClass} text-[10px] leading-snug">${escapeHtml(trimmed)}</div>`;
+      }).join('');
+    }
+
+    function getColorClass(colorType, defaultBaseClass) {
+      switch (colorType) {
+        case 'purple': return 'cell-type-purple';
+        case 'blue': return 'cell-type-blue';
+        case 'yellow': return 'cell-type-yellow';
+        case 'pink': return 'cell-type-pink';
+        case 'blank': return 'cell-type-blank';
+        default: return defaultBaseClass;
+      }
+    }
+
+    function escapeHtml(string) {
+      return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // 編輯 Modal
+    let activeSheetRow = null;
+    let activeSheetCol = null;
+
+    function openEditModal(cellKey, staffName, timeLabel, sheetRow, sheetCol) {
+      activeCellKey = cellKey;
+      activeSheetRow = sheetRow;
+      activeSheetCol = sheetCol;
+      const data = currentSchedule[cellKey] || { text: '', color: 'default' };
+
+      document.getElementById('editModalTitle').innerText = `編輯：${staffName} (${currentActiveWeek})`;
+      document.getElementById('editModalSubtitle').innerText = `${timeLabel} ｜ 本機自動同步`;
+      document.getElementById('editCellText').value = data.text;
+
+      const radios = document.getElementsByName('cellColorType');
+      radios.forEach(r => {
+        r.checked = (r.value === (data.color || 'default'));
+      });
+
+      document.getElementById('editModal').classList.remove('hidden');
+      document.getElementById('editCellText').focus();
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.add('hidden');
+      activeCellKey = null;
+      activeSheetRow = null;
+      activeSheetCol = null;
+    }
+
+    function saveCurrentCell() {
+      if (!activeCellKey) return;
+      const text = document.getElementById('editCellText').value;
+      const radios = document.getElementsByName('cellColorType');
+      let selectedColor = 'default';
+      radios.forEach(r => {
+        if (r.checked) selectedColor = r.value;
+      });
+
+      currentSchedule[activeCellKey] = {
+        text: text,
+        color: selectedColor
+      };
+
+      persistCurrentWeekData();
+      closeEditModal();
+      showToast('已成功更新並儲存！');
+    }
+
+    function clearCurrentCell() {
+      if (!activeCellKey) return;
+      document.getElementById('editCellText').value = '';
+      currentSchedule[activeCellKey] = { text: '', color: 'default' };
+      persistCurrentWeekData();
+      closeEditModal();
+      showToast('已清空儲存格內容');
+    }
+
+    function quickShareFromEdit() {
+      const text = document.getElementById('editCellText').value.trim();
+      if (!text) {
+        alert('請先輸入內容後再發送！');
+        return;
+      }
+      const title = document.getElementById('editModalTitle').innerText;
+      const sub = document.getElementById('editModalSubtitle').innerText;
+      const msg = `📋【新 ST 排班更新】\n${title}\n時段：${sub}\n內容：\n${text}\n-------------------------\n*發送自 Lohascare Gerontech 排班系統*`;
+      closeEditModal();
+      openCustomShare(msg, title);
+    }
+
+    function calculateOverview() {
+      let total = 0;
+      staffList.forEach(s => {
+        if (s.name !== '其他 / 備註' && s.name !== 'Allen' && s.name !== 'Fish') {
+          const val = parseInt(currentSchedule[`total_${s.name}`]?.text || '0', 10);
+          if (!isNaN(val)) total += val;
         }
       });
-    });
+      document.getElementById('statTotalCases').innerText = total;
+    }
 
-    // Export as simple CSV-like text
-    document.getElementById('btnExport').addEventListener('click', () => {
-      alert('匯出功能可再擴充（目前為示範版）。\n建議直接複製表格或使用瀏覽器「另存為 PDF」。');
+    // 匯出 CSV 與 WhatsApp
+    function exportToCSV() {
+      let csvContent = "\uFEFF";
+      const headers = ["日期", "時段", ...staffList.map(s => s.name)];
+      csvContent += headers.map(h => `"${h}"`).join(",") + "\r\n";
+
+      const dateMap = getWeekDayDateMap(currentActiveWeek);
+
+      timeSlots.forEach(slot => {
+        let row = [`${dateMap[slot.day]} (${slot.day})`, slot.slot];
+        const dKey = getDayKey(slot.day);
+        staffList.forEach(s => {
+          const isOther = s.name === '其他 / 備註';
+          const key = `${dKey}_${slot.slot}_${isOther ? 'other' : s.name}`;
+          const val = currentSchedule[key]?.text || '';
+          row.push(`"${val.replace(/"/g, '""').replace(/\n/g, ' ')}"`);
+        });
+        csvContent += row.join(",") + "\r\n";
+      });
+
+      let totalRow = ["本週總計", "TOTAL"];
+      staffList.forEach(s => {
+        const isOther = s.name === '其他 / 備註';
+        const key = `total_${isOther ? 'other' : s.name}`;
+        const val = currentSchedule[key]?.text || '0';
+        totalRow.push(`"${val}"`);
+      });
+      csvContent += totalRow.join(",") + "\r\n";
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ST_時間表_${currentActiveWeek.replace(/\//g, '-')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('已匯出 CSV 檔案！');
+    }
+
+    function openCustomShare(text, title) {
+      document.getElementById('modalStaffTitle').innerText = title;
+      document.getElementById('modalShareText').value = text;
+      document.getElementById('staffModal').classList.remove('hidden');
+    }
+
+    function openStaffModal(staffName) {
+      const dateMap = getWeekDayDateMap(currentActiveWeek);
+      const days = [
+        { key: 'mon', day: '一' },
+        { key: 'tue', day: '二' },
+        { key: 'wed', day: '三' },
+        { key: 'thu', day: '四' },
+        { key: 'fri', day: '五' },
+        { key: 'sat', day: '六' }
+      ];
+
+      let list = [];
+      days.forEach(d => {
+        const dText = `${dateMap[d.day]} (${d.day})`;
+        const amVal = currentSchedule[`${d.key}_am_${staffName}`]?.text;
+        const pmVal = currentSchedule[`${d.key}_pm_${staffName}`]?.text;
+        if (amVal) list.push(`• ${dText} AM: ${amVal.replace(/\n/g, ' ')}`);
+        if (pmVal) list.push(`• ${dText} PM: ${pmVal.replace(/\n/g, ' ')}`);
+      });
+
+      const totalVal = currentSchedule[`total_${staffName}`]?.text;
+      if (totalVal) list.push(`\n📊 總個案數：${totalVal}`);
+
+      const content = list.length > 0 ? list.join('\n') : '• 暫無排班安排';
+      const text = `📋【新 ST 服務時間表】\n👤 同工：${staffName}\n🗓️ 週期：${currentActiveWeek}\n-------------------------\n${content}\n-------------------------\n*發送自 Lohascare Gerontech 排班系統*`;
+      openCustomShare(text, `${staffName} 排班`);
+    }
+
+    function shareWeeklyOverview() {
+      toggleDropdown(false);
+      let lines = [];
+      staffList.forEach(s => {
+        if (s.name !== '其他 / 備註') {
+          const tot = currentSchedule[`total_${s.name}`]?.text || '0';
+          lines.push(`• ${s.name}: ${tot} cases`);
+        }
+      });
+      const text = `📢【新 ST 排班 - 週期概況 (${currentActiveWeek})】\n\n${lines.join('\n')}\n\n⚙️ 器材協調：請同工盡早標記 NMES / Biber protocol 使用時間。`;
+      openCustomShare(text, `${currentActiveWeek} 全體排班概況`);
+    }
+
+    function shareTodaySchedule() {
+      toggleDropdown(false);
+      let lines = [];
+      staffList.forEach(s => {
+        if (s.name !== '其他 / 備註') {
+          const am = currentSchedule[`fri_am_${s.name}`]?.text;
+          const pm = currentSchedule[`fri_pm_${s.name}`]?.text;
+          let desc = [];
+          if (am) desc.push(`AM: ${am.replace(/\n/g, ' ')}`);
+          if (pm) desc.push(`PM: ${pm.replace(/\n/g, ' ')}`);
+          if (desc.length > 0) lines.push(`• ${s.name}: ${desc.join(' | ')}`);
+        }
+      });
+      const text = `📅【今日 ST 服務走位重點 (${currentActiveWeek})】\n\n${lines.join('\n')}`;
+      openCustomShare(text, '今日服務走位');
+    }
+
+    function closeStaffModal() {
+      document.getElementById('staffModal').classList.add('hidden');
+    }
+
+    function sendToWhatsappFromModal() {
+      const text = document.getElementById('modalShareText').value;
+      const phone = document.getElementById('whatsappPhoneInput').value.trim().replace(/[^0-9]/g, '');
+      const encoded = encodeURIComponent(text);
+      let url = phone ? `https://api.whatsapp.com/send?phone=${phone}&text=${encoded}` : `https://api.whatsapp.com/send?text=${encoded}`;
+      window.open(url, '_blank');
+    }
+
+    function copyModalText() {
+      const text = document.getElementById('modalShareText').value;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('已複製排班內容到剪貼簿！');
+      }).catch(() => {
+        showToast('複製失敗，請手動複製文字。');
+      });
+    }
+
+    function toggleDropdown(show) {
+      const menu = document.getElementById('whatsappMenu');
+      if (show) menu.classList.remove('hidden');
+      else menu.classList.add('hidden');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.remove('translate-y-16', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-16', 'opacity-0');
+      }, 2500);
+    }
+
+    // 初始化啟動
+    document.addEventListener('DOMContentLoaded', () => {
+      loadWeekData(currentActiveWeek);
+
+      const listContainer = document.getElementById('staffDropdownList');
+      staffList.forEach(staff => {
+        if (staff.name === '其他 / 備註') return;
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center justify-between text-slate-700";
+        btn.innerHTML = `<span>${staff.name}</span> <i class="fa-brands fa-whatsapp text-emerald-600 text-[10px]"></i>`;
+        btn.onclick = () => {
+          toggleDropdown(false);
+          openStaffModal(staff.name);
+        };
+        listContainer.appendChild(btn);
+      });
+
+      document.getElementById('btnWhatsappDropdown').addEventListener('click', () => {
+        const menu = document.getElementById('whatsappMenu');
+        menu.classList.toggle('hidden');
+      });
+
+      document.addEventListener('click', (e) => {
+        const btn = document.getElementById('btnWhatsappDropdown');
+        const menu = document.getElementById('whatsappMenu');
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+          toggleDropdown(false);
+        }
+      });
+
+      document.getElementById('searchInput').addEventListener('input', function(e) {
+        const q = e.target.value.trim().toLowerCase();
+        const cells = document.querySelectorAll('#tableBody td.editable-cell');
+        cells.forEach(td => {
+          const text = td.textContent.toLowerCase();
+          if (q && text.includes(q)) {
+            td.style.boxShadow = 'inset 0 0 0 2px #059669';
+          } else {
+            td.style.boxShadow = '';
+          }
+        });
+      });
     });
   </script>
 </body>
