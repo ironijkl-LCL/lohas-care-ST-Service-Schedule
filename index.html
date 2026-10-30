@@ -87,10 +87,10 @@
 
   <!-- 頂部 Header -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
-    <div class="max-w-[1700px] mx-auto px-3 sm:px-4 h-14 flex items-center justify-between gap-2">
+    <div class="max-w-[1750px] mx-auto px-3 sm:px-4 h-14 flex items-center justify-between gap-2">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
-          <i class="fa-solid fa-calendar-check text-base"></i>
+          <i class="fa-solid fa-table-columns text-base"></i>
         </div>
         <div>
           <h1 class="font-bold text-slate-900 text-sm sm:text-base tracking-tight flex items-center gap-2">
@@ -98,8 +98,11 @@
             <span id="currentWeekBadge" class="text-[11px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full hidden sm:inline-block border border-emerald-300">
               26-31/10/2026
             </span>
+            <span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full hidden md:inline-block border border-emerald-200">
+              <i class="fa-solid fa-check-double mr-1"></i>內容與獨立數列歸位版
+            </span>
           </h1>
-          <p class="text-[11px] text-slate-500 hidden sm:block">每日精確對齊「幾月幾日」· 支援切換至年底各週</p>
+          <p class="text-[11px] text-slate-500 hidden sm:block">項目內容與個案數各自獨立 · 數列即時自動加總 TOTAL CASE</p>
         </div>
       </div>
 
@@ -146,7 +149,7 @@
   </header>
 
   <!-- 主內容區 -->
-  <main class="max-w-[1700px] w-full mx-auto p-2 sm:p-4 flex-1 flex flex-col">
+  <main class="max-w-[1750px] w-full mx-auto p-2 sm:p-4 flex-1 flex flex-col">
     
     <!-- 圖例與資訊說明 -->
     <div class="bg-white rounded-xl border border-slate-200 p-3 mb-3 shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs no-print">
@@ -175,70 +178,98 @@
           <span>會議工作坊</span>
         </div>
       </div>
-      <div class="text-[11px] text-slate-600 bg-emerald-50 border border-emerald-200 text-emerald-800 px-2.5 py-1 rounded-md font-medium">
-        <i class="fa-solid fa-calendar-check text-emerald-600 mr-1"></i> 左側日期已與實際月份精準對齊，點擊任何格子可編輯文字與色彩
+      <div class="text-[11px] text-slate-600 bg-amber-50 border border-amber-200 text-amber-900 px-2.5 py-1 rounded-md font-medium">
+        <i class="fa-solid fa-table-columns text-amber-700 mr-1"></i> 左欄為「排班事項」，右欄為「獨立數列」，點擊任一欄位即可直接編輯
       </div>
     </div>
 
     <!-- 表格主容器 -->
     <div class="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden flex-1 flex flex-col">
       <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] relative" id="tableContainer">
-        <table class="w-full text-[11px] border-collapse min-w-[1450px]" id="scheduleTable">
+        <table class="w-full text-[11px] border-collapse min-w-[1650px]" id="scheduleTable">
           <thead class="sticky-header shadow-sm select-none">
+            <!-- 頂層職員表頭 -->
             <tr>
-              <th class="sticky-col-date bg-slate-100 text-slate-800 font-bold px-2 py-2.5 text-center w-20 border-r-2 border-slate-300">日期</th>
-              <th class="sticky-col-time bg-slate-100 text-slate-700 font-bold px-1.5 py-2.5 text-center w-10 border-r-2 border-slate-300">時段</th>
+              <th class="sticky-col-date bg-slate-100 text-slate-800 font-bold px-2 py-2 text-center w-20 border-r-2 border-slate-300" rowspan="2">日期</th>
+              <th class="sticky-col-time bg-slate-100 text-slate-700 font-bold px-1.5 py-2 text-center w-10 border-r-2 border-slate-300" rowspan="2">時段</th>
               
               <!-- 軟橙組 -->
-              <th onclick="openStaffModal('Nanette')" class="col-orange-base text-amber-950 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Nanette')" class="col-orange-base text-amber-950 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Nanette <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
               <!-- 軟白組 -->
-              <th onclick="openStaffModal('Tammy')" class="col-white-base text-slate-900 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Tammy')" class="col-white-base text-slate-900 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Tammy <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
               <!-- 軟橙組 -->
-              <th onclick="openStaffModal('Dorothy')" class="col-orange-base text-amber-950 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Dorothy')" class="col-orange-base text-amber-950 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Dorothy <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
               <!-- 軟白組 -->
-              <th onclick="openStaffModal('Kelvin')" class="col-white-base text-slate-900 font-bold px-2 py-2.5 text-center min-w-[105px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Kelvin')" class="col-white-base text-slate-900 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Kelvin <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
               <!-- 軟橙組 -->
-              <th onclick="openStaffModal('Matthew')" class="col-orange-base text-amber-950 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Matthew')" class="col-orange-base text-amber-950 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Matthew <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
               <!-- 軟白組 -->
-              <th onclick="openStaffModal('Christy')" class="col-white-base text-slate-900 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Christy')" class="col-white-base text-slate-900 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Christy <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
               <!-- 軟橙組 -->
-              <th onclick="openStaffModal('Bibianna')" class="col-orange-base text-amber-950 font-bold px-2 py-2.5 text-center min-w-[95px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Bibianna')" class="col-orange-base text-amber-950 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Bibianna <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
               <!-- 軟白組 -->
-              <th onclick="openStaffModal('Tina')" class="col-white-base text-slate-900 font-bold px-2 py-2.5 text-center min-w-[105px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Tina')" class="col-white-base text-slate-900 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Tina <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
               <!-- 軟橙組 -->
-              <th onclick="openStaffModal('Jason')" class="col-orange-base text-amber-950 font-bold px-2 py-2.5 text-center min-w-[105px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Jason')" class="col-orange-base text-amber-950 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Jason <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
               <!-- 軟白組 -->
-              <th onclick="openStaffModal('Martina')" class="col-white-base text-slate-900 font-bold px-2 py-2.5 text-center min-w-[105px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Martina')" class="col-white-base text-slate-900 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Martina <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
               <!-- 淺藍組 -->
-              <th onclick="openStaffModal('Allen')" class="col-blue-base text-blue-950 font-bold px-2 py-2.5 text-center min-w-[90px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Allen')" class="col-blue-base text-blue-950 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Allen <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
-              <th onclick="openStaffModal('Fish')" class="col-blue-base text-blue-950 font-bold px-2 py-2.5 text-center min-w-[90px] cursor-pointer hover:brightness-95">
+              <th colspan="2" onclick="openStaffModal('Fish')" class="col-blue-base text-blue-950 font-bold px-2 py-1.5 text-center cursor-pointer hover:brightness-95">
                 Fish <i class="fa-brands fa-whatsapp text-emerald-700 text-[10px] ml-0.5"></i>
               </th>
               
               <!-- 備註/其他 -->
-              <th class="header-pink-base text-pink-950 font-bold px-2 py-2.5 text-center min-w-[120px]">其他 / 備註</th>
+              <th class="header-pink-base text-pink-950 font-bold px-2 py-2 text-center min-w-[120px]" rowspan="2">其他 / 備註</th>
+            </tr>
+            <!-- 次層表頭 -->
+            <tr class="text-[10px] text-slate-500 font-semibold bg-slate-50">
+              <th class="col-orange-base px-1.5 py-0.5 min-w-[85px] text-center">項目</th>
+              <th class="col-orange-base px-1 py-0.5 w-8 text-center text-amber-900 font-bold">數</th>
+              <th class="col-white-base px-1.5 py-0.5 min-w-[85px] text-center">項目</th>
+              <th class="col-white-base px-1 py-0.5 w-8 text-center text-slate-700 font-bold">數</th>
+              <th class="col-orange-base px-1.5 py-0.5 min-w-[85px] text-center">項目</th>
+              <th class="col-orange-base px-1 py-0.5 w-8 text-center text-amber-900 font-bold">數</th>
+              <th class="col-white-base px-1.5 py-0.5 min-w-[95px] text-center">項目</th>
+              <th class="col-white-base px-1 py-0.5 w-8 text-center text-slate-700 font-bold">數</th>
+              <th class="col-orange-base px-1.5 py-0.5 min-w-[85px] text-center">項目</th>
+              <th class="col-orange-base px-1 py-0.5 w-8 text-center text-amber-900 font-bold">數</th>
+              <th class="col-white-base px-1.5 py-0.5 min-w-[85px] text-center">項目</th>
+              <th class="col-white-base px-1 py-0.5 w-8 text-center text-slate-700 font-bold">數</th>
+              <th class="col-orange-base px-1.5 py-0.5 min-w-[85px] text-center">項目</th>
+              <th class="col-orange-base px-1 py-0.5 w-8 text-center text-amber-900 font-bold">數</th>
+              <th class="col-white-base px-1.5 py-0.5 min-w-[95px] text-center">項目</th>
+              <th class="col-white-base px-1 py-0.5 w-8 text-center text-sky-800 font-bold">數</th>
+              <th class="col-orange-base px-1.5 py-0.5 min-w-[95px] text-center">項目</th>
+              <th class="col-orange-base px-1 py-0.5 w-8 text-center text-amber-900 font-bold">數</th>
+              <th class="col-white-base px-1.5 py-0.5 min-w-[95px] text-center">項目</th>
+              <th class="col-white-base px-1 py-0.5 w-8 text-center text-slate-700 font-bold">數</th>
+              <th class="col-blue-base px-1.5 py-0.5 min-w-[80px] text-center">項目</th>
+              <th class="col-blue-base px-1 py-0.5 w-8 text-center text-blue-900 font-bold">數</th>
+              <th class="col-blue-base px-1.5 py-0.5 min-w-[80px] text-center">項目</th>
+              <th class="col-blue-base px-1 py-0.5 w-8 text-center text-blue-900 font-bold">數</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -246,10 +277,8 @@
       </div>
     </div>
 
-    <!-- 底部 Google Sheets 樣式多週切換分頁列 (Tabs 至年尾) -->
-    <div class="mt-2 bg-white rounded-xl border border-slate-300 p-2 shadow-sm flex items-center gap-1.5 overflow-x-auto no-print text-[11px]" id="weekTabsContainer">
-      <!-- JS 動態生成所有分頁 -->
-    </div>
+    <!-- 底部 Google Sheets 樣式多週切換分頁列 -->
+    <div class="mt-2 bg-white rounded-xl border border-slate-300 p-2 shadow-sm flex items-center gap-1.5 overflow-x-auto no-print text-[11px]" id="weekTabsContainer"></div>
 
     <!-- 底部附加資訊模組 (Biber Protocol 與備註) -->
     <div class="mt-3 grid grid-cols-1 lg:grid-cols-12 gap-3 no-print">
@@ -317,7 +346,7 @@
           <i class="fa-solid fa-pen-to-square text-emerald-400"></i>
           <div>
             <h3 class="font-bold text-sm" id="editModalTitle">編輯排班內容</h3>
-            <p class="text-[10px] text-slate-400" id="editModalSubtitle">修改後會即時存入瀏覽器本機</p>
+            <p class="text-[10px] text-slate-400" id="editModalSubtitle">修改後自動加總獨立數列並同步本機</p>
           </div>
         </div>
         <button onclick="closeEditModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
@@ -326,12 +355,22 @@
       </div>
 
       <div class="p-4 overflow-y-auto flex-1 space-y-4">
+        <!-- 排班文字內容 -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">排班文字內容（支援換行）：</label>
-          <textarea id="editCellText" rows="5" placeholder="輸入個案名稱、時間、地點或備註..." 
+          <label class="block text-xs font-bold text-slate-700 mb-1">排班項目內容（支援換行）：</label>
+          <textarea id="editCellText" rows="4" placeholder="例如：城市 或 錦勝..." 
                     class="w-full text-xs font-mono p-3 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 leading-relaxed"></textarea>
         </div>
 
+        <!-- 獨立個案數 -->
+        <div id="countInputGroup">
+          <label class="block text-xs font-bold text-slate-700 mb-1">獨立個案數 (數列數字)：</label>
+          <input type="number" id="editCellCount" placeholder="例如：3 或 5" min="0" step="1"
+                 class="w-32 text-xs font-bold p-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <span class="text-[10px] text-slate-400 ml-2">填入後將於獨立數列顯示並即時參與自動加總</span>
+        </div>
+
+        <!-- 色塊類型 -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2">選擇色塊類型：</label>
           <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-xs">
@@ -431,7 +470,7 @@
   <!-- 提示 Toast -->
   <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl text-xs font-medium z-50 flex items-center gap-2 transform translate-y-16 opacity-0 transition-all duration-300">
     <i class="fa-solid fa-circle-check text-emerald-400"></i>
-    <span id="toastMsg">成功更新並自動儲存！</span>
+    <span id="toastMsg">成功更新並自動加總！</span>
   </div>
 
   <!-- 核心 JavaScript -->
@@ -439,7 +478,6 @@
     const STORAGE_PREFIX = 'ST_SCHEDULE_WEEK_';
     const CURRENT_WEEK_KEY = 'ST_CURRENT_ACTIVE_WEEK';
 
-    // 擴充至 2026 年底之所有分頁清單
     const allWeekTabs = [
       { id: '28/9-3/10', title: '28/9-3/10', isSpecial: false },
       { id: '5-10/10/2026', title: '5-10/10/2026', isSpecial: false },
@@ -461,28 +499,23 @@
 
     let currentActiveWeek = localStorage.getItem(CURRENT_WEEK_KEY) || '26-31/10/2026';
 
-    // 職員名單與基底色
     const staffList = [
-      { name: 'Nanette', baseClass: 'col-orange-base', textClass: 'text-amber-950', colIndex: 3 },
-      { name: 'Tammy', baseClass: 'col-white-base', textClass: 'text-slate-900', colIndex: 4 },
-      { name: 'Dorothy', baseClass: 'col-orange-base', textClass: 'text-amber-950', colIndex: 5 },
-      { name: 'Kelvin', baseClass: 'col-white-base', textClass: 'text-slate-900', colIndex: 6 },
-      { name: 'Matthew', baseClass: 'col-orange-base', textClass: 'text-amber-950', colIndex: 7 },
-      { name: 'Christy', baseClass: 'col-white-base', textClass: 'text-slate-900', colIndex: 8 },
-      { name: 'Bibianna', baseClass: 'col-orange-base', textClass: 'text-amber-950', colIndex: 9 },
-      { name: 'Tina', baseClass: 'col-white-base', textClass: 'text-sky-700', colIndex: 10 },
-      { name: 'Jason', baseClass: 'col-orange-base', textClass: 'text-amber-950', colIndex: 11 },
-      { name: 'Martina', baseClass: 'col-white-base', textClass: 'text-slate-900', colIndex: 12 },
-      { name: 'Allen', baseClass: 'col-blue-base', textClass: 'text-blue-950', colIndex: 13 },
-      { name: 'Fish', baseClass: 'col-blue-base', textClass: 'text-blue-950', colIndex: 14 },
-      { name: '其他 / 備註', baseClass: 'bg-slate-50', textClass: 'text-slate-700', colIndex: 15 }
+      { name: 'Nanette', baseClass: 'col-orange-base', textClass: 'text-amber-950', hasCount: true },
+      { name: 'Tammy', baseClass: 'col-white-base', textClass: 'text-slate-900', hasCount: true },
+      { name: 'Dorothy', baseClass: 'col-orange-base', textClass: 'text-amber-950', hasCount: true },
+      { name: 'Kelvin', baseClass: 'col-white-base', textClass: 'text-slate-900', hasCount: true },
+      { name: 'Matthew', baseClass: 'col-orange-base', textClass: 'text-amber-950', hasCount: true },
+      { name: 'Christy', baseClass: 'col-white-base', textClass: 'text-slate-900', hasCount: true },
+      { name: 'Bibianna', baseClass: 'col-orange-base', textClass: 'text-amber-950', hasCount: true },
+      { name: 'Tina', baseClass: 'col-white-base', textClass: 'text-sky-700', hasCount: true },
+      { name: 'Jason', baseClass: 'col-orange-base', textClass: 'text-amber-950', hasCount: true },
+      { name: 'Martina', baseClass: 'col-white-base', textClass: 'text-slate-900', hasCount: true },
+      { name: 'Allen', baseClass: 'col-blue-base', textClass: 'text-blue-950', hasCount: true },
+      { name: 'Fish', baseClass: 'col-blue-base', textClass: 'text-blue-950', hasCount: true },
+      { name: '其他 / 備註', baseClass: 'bg-slate-50', textClass: 'text-slate-700', hasCount: false }
     ];
 
-    // ========================================================
-    // 精確「星期幾 ➜ 幾月幾日」日期字典計算邏輯
-    // ========================================================
     function getWeekDayDateMap(weekId) {
-      // 針對常見週次定義直接返回精確中文字串
       const fixedMaps = {
         '28/9-3/10': { '一': '9月28日', '二': '9月29日', '三': '9月30日', '四': '10月1日', '五': '10月2日', '六': '10月3日' },
         '5-10/10/2026': { '一': '10月5日', '二': '10月6日', '三': '10月7日', '四': '10月8日', '五': '10月9日', '六': '10月10日' },
@@ -499,309 +532,252 @@
         '21-26/12/2026': { '一': '12月21日', '二': '12月22日', '三': '12月23日', '四': '12月24日', '五': '12月25日', '六': '12月26日' },
         '28-31/12/2026': { '一': '12月28日', '二': '12月29日', '三': '12月30日', '四': '12月31日', '五': '1月1日', '六': '1月2日' }
       };
+      return fixedMaps[weekId] || { '一': '星期一', '二': '星期二', '三': '星期三', '四': '星期四', '五': '星期五', '六': '星期六' };
+    }
 
-      if (fixedMaps[weekId]) return fixedMaps[weekId];
+    // 計算指定同工獨立數列自動加總
+    function getStaffIndependentCountSum(staffName) {
+      const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+      const slots = ['am', 'pm'];
+      let colSum = 0;
 
-      // 特殊頁預設
-      return { '一': '星期一', '二': '星期二', '三': '星期三', '四': '星期四', '五': '星期五', '六': '星期六' };
+      days.forEach(d => {
+        slots.forEach(s => {
+          const key = `${d}_${s}_${staffName}`;
+          const cell = currentSchedule[key];
+          if (cell && cell.count !== undefined && cell.count !== null && cell.count !== '') {
+            const val = parseInt(cell.count, 10);
+            if (!isNaN(val)) colSum += val;
+          }
+        });
+      });
+
+      return colSum;
     }
 
     // ==========================================
-    // 內建資料庫 (涵蓋使用者截圖真實排班)
+    // 內建資料庫 (所有內容與數字精確各自歸位)
     // ==========================================
-
-    // 1. 26-31/10/2026
     const builtIn_26_31_Oct = {
-      "mon_am_Nanette": { text: "城市\n3 AL", color: "default" },
-      "mon_am_Tammy": { text: "", color: "default" },
-      "mon_am_Dorothy": { text: "錦勝\n3 松心香 (2/F)", color: "purple" },
-      "mon_am_Kelvin": { text: "5 康柏軒", color: "default" },
-      "mon_am_Matthew": { text: "4 陽光\nSL", color: "default" },
-      "mon_am_Christy": { text: "", color: "default" },
-      "mon_am_Bibianna": { text: "騰達\nsarc dsg screen", color: "default" },
-      "mon_am_Tina": { text: "2 英皇", color: "default" },
-      "mon_am_Jason": { text: "2 P260672 1000", color: "default" },
-      "mon_am_Martina": { text: "騰達 w/ Bibianna\n5\n2 new", color: "default" },
-      "mon_am_Allen": { text: "SL", color: "default" },
-      "mon_am_Fish": { text: "", color: "default" },
-      "mon_am_other": { text: "Bibianna\nSarcopenic DSG screening pack", color: "pink" },
+      // 一 AM
+      "mon_am_Nanette": { text: "城市\nAL", count: "3", color: "default" },
+      "mon_am_Dorothy": { text: "錦勝\n松心香 (2/F)", count: "3", color: "purple" },
+      "mon_am_Kelvin": { text: "康柏軒", count: "5", color: "default" },
+      "mon_am_Matthew": { text: "陽光\nSL", count: "4", color: "default" },
+      "mon_am_Bibianna": { text: "騰達\nsarc dsg screen", count: "", color: "default" },
+      "mon_am_Tina": { text: "英皇", count: "2", color: "default" },
+      "mon_am_Jason": { text: "P260672 1000", count: "2", color: "default" },
+      "mon_am_Martina": { text: "騰達 w/ Bibianna\n2 new", count: "5", color: "pink" },
+      "mon_am_Allen": { text: "SL", count: "", color: "default" },
+      "mon_am_other": { text: "Bibianna\nSarcopenic DSG screening pack", count: "", color: "pink" },
 
-      "mon_pm_Nanette": { text: "城市\n2\nCSY carer & TWP meal ob", color: "default" },
-      "mon_pm_Tammy": { text: "", color: "default" },
-      "mon_pm_Dorothy": { text: "GC visit (check equip)\nM4384@深灣1600", color: "default" },
-      "mon_pm_Kelvin": { text: "Health service meeting@MOSTE", color: "default" },
-      "mon_pm_Matthew": { text: "", color: "default" },
-      "mon_pm_Christy": { text: "", color: "default" },
-      "mon_pm_Bibianna": { text: "PM CL", color: "default" },
-      "mon_pm_Tina": { text: "", color: "default" },
-      "mon_pm_Jason": { text: "P260668 1600", color: "default" },
-      "mon_pm_Martina": { text: "type progress sum for OPD FU\nVGreen proj", color: "default" },
-      "mon_pm_Allen": { text: "VGreen proj", color: "default" },
-      "mon_pm_Fish": { text: "", color: "default" },
-      "mon_pm_other": { text: "", color: "default" },
+      // 一 PM
+      "mon_pm_Nanette": { text: "城市\nCSY carer & TWP meal ob", count: "2", color: "default" },
+      "mon_pm_Dorothy": { text: "GC visit (check equip)\nM4384@深灣1600", count: "", color: "default" },
+      "mon_pm_Kelvin": { text: "Health service meeting@MOSTE", count: "", color: "default" },
+      "mon_pm_Bibianna": { text: "PM CL", count: "", color: "default" },
+      "mon_pm_Jason": { text: "P260668 1600", count: "", color: "default" },
+      "mon_pm_Martina": { text: "type progress sum for OPD FU\nVGreen proj", count: "", color: "default" },
+      "mon_pm_Allen": { text: "VGreen proj", count: "", color: "default" },
 
-      "tue_am_Nanette": { text: "福恩\n2 CPL\nFU research, 5 participants", color: "default" },
-      "tue_am_Tammy": { text: "", color: "default" },
-      "tue_am_Dorothy": { text: "仁和居\n8", color: "purple" },
-      "tue_am_Kelvin": { text: "Prepare health meeti EH MFA 1100\nPrepare ASTRA", color: "default" },
-      "tue_am_Matthew": { text: "安樂\n4", color: "default" },
-      "tue_am_Christy": { text: "4 樂怡", color: "default" },
-      "tue_am_Bibianna": { text: "2 Q260514 (Wah Kwai TR, 1000)\nQ260375 (Wah Fu, 1100)", color: "default" },
-      "tue_am_Tina": { text: "護老樂(富怡)\nH3-003", color: "default" },
-      "tue_am_Jason": { text: "2 T蓮香1500", color: "default" },
-      "tue_am_Martina": { text: "仁和居\n2", color: "default" },
-      "tue_am_Allen": { text: "2 T蓮香1500", color: "default" },
-      "tue_am_Fish": { text: "仁和居", color: "default" },
-      "tue_am_other": { text: "", color: "default" },
+      // 二 AM
+      "tue_am_Nanette": { text: "福恩\nCPL\nFU research, 5 participants", count: "2", color: "default" },
+      "tue_am_Dorothy": { text: "仁和居", count: "8", color: "purple" },
+      "tue_am_Kelvin": { text: "Prepare health meeti EH MFA 1100\nPrepare ASTRA", count: "", color: "default" },
+      "tue_am_Matthew": { text: "安樂", count: "4", color: "default" },
+      "tue_am_Christy": { text: "樂怡", count: "4", color: "default" },
+      "tue_am_Bibianna": { text: "Q260514 (Wah Kwai TR, 1000)\nQ260375 (Wah Fu, 1100)", count: "2", color: "default" },
+      "tue_am_Tina": { text: "護老樂(富怡)\nH3-003", count: "", color: "default" },
+      "tue_am_Jason": { text: "T蓮香1500", count: "2", color: "default" },
+      "tue_am_Martina": { text: "護老樂(富怡)\nH3-003", count: "2", color: "purple" },
+      "tue_am_Allen": { text: "T蓮香1500", count: "2", color: "default" },
+      "tue_am_Fish": { text: "仁和居", count: "", color: "default" },
 
-      "tue_pm_Nanette": { text: "", color: "default" },
-      "tue_pm_Tammy": { text: "", color: "default" },
-      "tue_pm_Dorothy": { text: "", color: "default" },
-      "tue_pm_Kelvin": { text: "TWGHs發布會", color: "default" },
-      "tue_pm_Matthew": { text: "Doc", color: "default" },
-      "tue_pm_Christy": { text: "T蓮香1500\nSQS prep 1630", color: "default" },
-      "tue_pm_Bibianna": { text: "順福\n2\n1600 off", color: "default" },
-      "tue_pm_Tina": { text: "", color: "default" },
-      "tue_pm_Jason": { text: "P260542 1400\nP260673 1600", color: "default" },
-      "tue_pm_Martina": { text: "環翠\n2\nVGreen proj", color: "default" },
-      "tue_pm_Allen": { text: "VGreen proj", color: "default" },
-      "tue_pm_Fish": { text: "", color: "default" },
-      "tue_pm_other": { text: "", color: "default" },
+      // 二 PM
+      "tue_pm_Kelvin": { text: "TWGHs發布會", count: "", color: "default" },
+      "tue_pm_Matthew": { text: "Doc", count: "", color: "default" },
+      "tue_pm_Christy": { text: "T蓮香1500\nSQS prep 1630", count: "", color: "default" },
+      "tue_pm_Bibianna": { text: "順福\n1600 off", count: "2", color: "default" },
+      "tue_pm_Jason": { text: "P260542 1400\nP260673 1600", count: "", color: "default" },
+      "tue_pm_Martina": { text: "環翠\nVGreen proj", count: "2", color: "default" },
+      "tue_pm_Allen": { text: "VGreen proj", count: "", color: "default" },
 
-      "wed_am_Nanette": { text: "耆恩\n4", color: "default" },
-      "wed_am_Tammy": { text: "雅明\n3\nw/ mst student", color: "default" },
-      "wed_am_Dorothy": { text: "富璟\n6", color: "default" },
-      "wed_am_Kelvin": { text: "Prepare health meeti", color: "default" },
-      "wed_am_Matthew": { text: "保良\n8", color: "default" },
-      "wed_am_Christy": { text: "達源\n4", color: "default" },
-      "wed_am_Bibianna": { text: "匯豐 Vital stim\n5", color: "default" },
-      "wed_am_Tina": { text: "金華 new cases\n6\nCall Q260639", color: "default" },
-      "wed_am_Jason": { text: "護老樂\n4", color: "default" },
-      "wed_am_Martina": { text: "W尤菊 rv 1000\nY秀芳 rv 1200", color: "default" },
-      "wed_am_Allen": { text: "保良", color: "default" },
-      "wed_am_Fish": { text: "金華", color: "default" },
-      "wed_am_other": { text: "", color: "default" },
+      // 三 AM
+      "wed_am_Nanette": { text: "耆恩", count: "4", color: "default" },
+      "wed_am_Tammy": { text: "雅明\nw/ mst student", count: "3", color: "default" },
+      "wed_am_Dorothy": { text: "富璟", count: "6", color: "default" },
+      "wed_am_Kelvin": { text: "Prepare health meeti", count: "", color: "default" },
+      "wed_am_Matthew": { text: "保良", count: "8", color: "default" },
+      "wed_am_Christy": { text: "達源", count: "4", color: "default" },
+      "wed_am_Bibianna": { text: "匯豐 Vital stim", count: "5", color: "default" },
+      "wed_am_Tina": { text: "金華 new cases\nCall Q260639", count: "6", color: "default" },
+      "wed_am_Jason": { text: "護老樂", count: "4", color: "default" },
+      "wed_am_Martina": { text: "W尤菊 rv 1000\nY秀芳 rv 1200", count: "", color: "default" },
+      "wed_am_Allen": { text: "保良", count: "", color: "default" },
+      "wed_am_Fish": { text: "金華", count: "", color: "default" },
 
-      "wed_pm_Nanette": { text: "", color: "default" },
-      "wed_pm_Tammy": { text: "", color: "default" },
-      "wed_pm_Dorothy": { text: "MCCC LTH 1430@N\nnew Ax@KLC 16:15", color: "default" },
-      "wed_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nHealth service meeting@HQ\nKM meeting 1600", color: "default" },
-      "wed_pm_Matthew": { text: "", color: "default" },
-      "wed_pm_Christy": { text: "", color: "default" },
-      "wed_pm_Bibianna": { text: "1600 off", color: "default" },
-      "wed_pm_Tina": { text: "Q251005 (Aberdeen, P260682 1400)\nQ260657 (Wah Kwai, 1530)\nQ260455 (Wah Fu, 1600)", color: "default" },
-      "wed_pm_Jason": { text: "P260682 1400", color: "default" },
-      "wed_pm_Martina": { text: "VGreen meeting 1730\nKM meeting 1600", color: "default" },
-      "wed_pm_Allen": { text: "", color: "default" },
-      "wed_pm_Fish": { text: "", color: "default" },
-      "wed_pm_other": { text: "", color: "default" },
+      // 三 PM
+      "wed_pm_Dorothy": { text: "MCCC LTH 1430@N\nnew Ax@KLC 16:15", count: "", color: "default" },
+      "wed_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nHealth service meeting@HQ\nKM meeting 1600", count: "", color: "default" },
+      "wed_pm_Bibianna": { text: "1600 off", count: "", color: "default" },
+      "wed_pm_Tina": { text: "Q251005 (Aberdeen, P260682 1400)\nQ260657 (Wah Kwai, 1530)\nQ260455 (Wah Fu, 1600)", count: "", color: "default" },
+      "wed_pm_Jason": { text: "P260682 1400", count: "", color: "default" },
+      "wed_pm_Martina": { text: "VGreen meeting 1730\nKM meeting 1600", count: "", color: "default" },
 
-      "thu_am_Nanette": { text: "耆安\n4", color: "default" },
-      "thu_am_Tammy": { text: "松齡\n4", color: "default" },
-      "thu_am_Dorothy": { text: "雋康頤庭\n5\ndiet spot check", color: "purple" },
-      "thu_am_Kelvin": { text: "綠山居\n5", color: "default" },
-      "thu_am_Matthew": { text: "AL AM", color: "default" },
-      "thu_am_Christy": { text: "聖德\n6", color: "purple" },
-      "thu_am_Bibianna": { text: "樂怡\n1\n匯豐\n1", color: "default" },
-      "thu_am_Tina": { text: "Back at 10am\nQ260447 (Sheung Wan, 1000)", color: "default" },
-      "thu_am_Jason": { text: "康悅\n5", color: "default" },
-      "thu_am_Martina": { text: "高高\n2", color: "default" },
-      "thu_am_Allen": { text: "聖德", color: "default" },
-      "thu_am_Fish": { text: "康悅", color: "default" },
-      "thu_am_other": { text: "", color: "default" },
+      // 四 AM
+      "thu_am_Nanette": { text: "耆安", count: "4", color: "default" },
+      "thu_am_Tammy": { text: "松齡", count: "4", color: "default" },
+      "thu_am_Dorothy": { text: "雋康頤庭\ndiet spot check", count: "5", color: "purple" },
+      "thu_am_Kelvin": { text: "綠山居", count: "5", color: "default" },
+      "thu_am_Matthew": { text: "AL AM", count: "", color: "default" },
+      "thu_am_Christy": { text: "聖德", count: "6", color: "purple" },
+      "thu_am_Bibianna": { text: "樂怡\n匯豐", count: "1", color: "default" },
+      "thu_am_Tina": { text: "Back at 10am\nQ260447 (Sheung Wan, 1000)", count: "1", color: "default" },
+      "thu_am_Jason": { text: "康悅", count: "5", color: "default" },
+      "thu_am_Martina": { text: "高高", count: "2", color: "default" },
+      "thu_am_Allen": { text: "聖德", count: "2", color: "default" },
+      "thu_am_Fish": { text: "康悅", count: "", color: "default" },
 
-      "thu_pm_Nanette": { text: "", color: "default" },
-      "thu_pm_Tammy": { text: "MWC(CKC@AR4)", color: "default" },
-      "thu_pm_Dorothy": { text: "H57-003", color: "default" },
-      "thu_pm_Kelvin": { text: "", color: "default" },
-      "thu_pm_Matthew": { text: "木星\n2", color: "default" },
-      "thu_pm_Christy": { text: "SQS prep 1530", color: "default" },
-      "thu_pm_Bibianna": { text: "樂悠居\n2", color: "default" },
-      "thu_pm_Tina": { text: "康盛 2\n馬寶 1", color: "default" },
-      "thu_pm_Jason": { text: "", color: "default" },
-      "thu_pm_Martina": { text: "瑞安\n3\nH57-004", color: "purple" },
-      "thu_pm_Allen": { text: "2:45pm off", color: "default" },
-      "thu_pm_Fish": { text: "", color: "default" },
-      "thu_pm_other": { text: "", color: "default" },
+      // 四 PM
+      "thu_pm_Tammy": { text: "MWC(CKC@AR4)", count: "", color: "default" },
+      "thu_pm_Dorothy": { text: "H57-003", count: "", color: "default" },
+      "thu_pm_Matthew": { text: "木星", count: "2", color: "default" },
+      "thu_pm_Christy": { text: "SQS prep 1530", count: "", color: "default" },
+      "thu_pm_Bibianna": { text: "樂悠居", count: "2", color: "default" },
+      "thu_pm_Tina": { text: "康盛 2\n馬寶 1", count: "2", color: "default" },
+      "thu_pm_Martina": { text: "瑞安\nH57-004", count: "3", color: "purple" },
+      "thu_pm_Allen": { text: "2:45pm off", count: "3", color: "default" },
 
-      "fri_am_Nanette": { text: "逸柏軒\nFU research", color: "default" },
-      "fri_am_Tammy": { text: "開美 LYS meal obs", color: "default" },
-      "fri_am_Dorothy": { text: "", color: "default" },
-      "fri_am_Kelvin": { text: "GMGC interview 11:00", color: "default" },
-      "fri_am_Matthew": { text: "真光", color: "default" },
-      "fri_am_Christy": { text: "杏恩\n耀東", color: "default" },
-      "fri_am_Bibianna": { text: "翠灣\n[prep screen list]", color: "default" },
-      "fri_am_Tina": { text: "Q260640 (Mid levels, 1030)\n樂善\n樂家", color: "default" },
-      "fri_am_Jason": { text: "天龍\nP260676 1600\nFU P260638", color: "default" },
-      "fri_am_Martina": { text: "4 docs\nVGreen deadline", color: "default" },
-      "fri_am_Allen": { text: "", color: "default" },
-      "fri_am_Fish": { text: "灣仔\nSL", color: "default" },
-      "fri_am_other": { text: "", color: "default" },
+      // 五 AM
+      "fri_am_Nanette": { text: "逸柏軒\nFU research", count: "", color: "default" },
+      "fri_am_Tammy": { text: "開美 LYS meal obs", count: "", color: "default" },
+      "fri_am_Kelvin": { text: "GMGC interview 11:00", count: "", color: "default" },
+      "fri_am_Matthew": { text: "真光", count: "", color: "default" },
+      "fri_am_Christy": { text: "杏恩\n耀東", count: "", color: "default" },
+      "fri_am_Bibianna": { text: "翠灣\n[prep screen list]", count: "", color: "default" },
+      "fri_am_Tina": { text: "Q260640 (Mid levels, 1030)\n樂善\n樂家", count: "", color: "default" },
+      "fri_am_Jason": { text: "天龍\nP260676 1600\nFU P260638", count: "", color: "default" },
+      "fri_am_Martina": { text: "docs\nVGreen deadline", count: "", color: "default" },
+      "fri_am_Fish": { text: "灣仔\nSL", count: "", color: "default" },
 
-      "fri_pm_Nanette": { text: "", color: "default" },
-      "fri_pm_Tammy": { text: "", color: "default" },
-      "fri_pm_Dorothy": { text: "", color: "default" },
-      "fri_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nMWC (WYH@KTown, 1530)", color: "default" },
-      "fri_pm_Matthew": { text: "", color: "default" },
-      "fri_pm_Christy": { text: "", color: "default" },
-      "fri_pm_Bibianna": { text: "", color: "default" },
-      "fri_pm_Tina": { text: "", color: "default" },
-      "fri_pm_Jason": { text: "", color: "default" },
-      "fri_pm_Martina": { text: "聖輝 PO\n1", color: "default" },
-      "fri_pm_Allen": { text: "", color: "default" },
-      "fri_pm_Fish": { text: "", color: "default" },
-      "fri_pm_other": { text: "", color: "default" },
-
-      "total_Nanette": { text: "19", color: "default" },
-      "total_Tammy": { text: "7", color: "default" },
-      "total_Dorothy": { text: "22", color: "default" },
-      "total_Kelvin": { text: "10", color: "default" },
-      "total_Matthew": { text: "14", color: "default" },
-      "total_Christy": { text: "14", color: "default" },
-      "total_Bibianna": { text: "15", color: "default" },
-      "total_Tina": { text: "11", color: "default" },
-      "total_Jason": { text: "13", color: "default" },
-      "total_Martina": { text: "15", color: "default" },
-      "total_Allen": { text: "", color: "default" },
-      "total_Fish": { text: "", color: "default" },
-      "total_other": { text: "", color: "default" }
+      // 五 PM
+      "fri_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nMWC (WYH@KTown, 1530)", count: "", color: "default" },
+      "fri_pm_Martina": { text: "聖輝 PO", count: "1", color: "default" }
     };
 
     // 2. 2-7/11/2026
     const builtIn_2_7_Nov = {
-      "mon_am_Tammy": { text: "松齡\nallen", color: "default" },
-      "mon_am_Dorothy": { text: "錦勝", color: "purple" },
-      "mon_am_Kelvin": { text: "松心薈 (1/F new)", color: "default" },
-      "mon_am_Matthew": { text: "瑞康", color: "default" },
-      "mon_am_Christy": { text: "陽光", color: "default" },
-      "mon_am_Bibianna": { text: "騰達\nsarc dsg screen", color: "default" },
-      "mon_am_Tina": { text: "Idsp ktown 0900", color: "default" },
-      "mon_am_Jason": { text: "天龍", color: "default" },
-      "mon_am_Martina": { text: "騰達 w/ Bibianna\n9\n2 new", color: "default" },
-      "mon_am_other": { text: "Sarcopenic DSG screening pack\nBibianna", color: "pink" },
+      "mon_am_Tammy": { text: "松齡\nallen", count: "", color: "default" },
+      "mon_am_Dorothy": { text: "錦勝", count: "", color: "purple" },
+      "mon_am_Kelvin": { text: "松心薈 (1/F new)", count: "", color: "default" },
+      "mon_am_Matthew": { text: "瑞康", count: "", color: "default" },
+      "mon_am_Christy": { text: "陽光", count: "", color: "default" },
+      "mon_am_Bibianna": { text: "騰達\nsarc dsg screen", count: "", color: "default" },
+      "mon_am_Tina": { text: "Idsp ktown 0900", count: "", color: "default" },
+      "mon_am_Jason": { text: "天龍", count: "", color: "default" },
+      "mon_am_Martina": { text: "騰達 w/ Bibianna\n2 new", count: "9", color: "default" },
+      "mon_am_other": { text: "Sarcopenic DSG screening pack\nBibianna", count: "", color: "pink" },
 
-      "mon_pm_Kelvin": { text: "CBRC new@NP 14:00", color: "default" },
-      "mon_pm_Tina": { text: "英皇", color: "default" },
+      "mon_pm_Kelvin": { text: "CBRC new@NP 14:00", count: "", color: "default" },
+      "mon_pm_Tina": { text: "英皇", count: "", color: "default" },
 
-      "tue_am_Nanette": { text: "福恩\nFU research", color: "default" },
-      "tue_am_Tammy": { text: "康福(太安樓) 1 new\n麗濤 2 new", color: "default" },
-      "tue_am_Dorothy": { text: "仁和居", color: "purple" },
-      "tue_am_Kelvin": { text: "松山府邸 (2/F new)", color: "default" },
-      "tue_am_Matthew": { text: "ED MLC 1130", color: "default" },
-      "tue_am_Christy": { text: "安樂", color: "default" },
-      "tue_am_Bibianna": { text: "樂怡 Vital stim\n0900 LWH CWY WCK", color: "default" },
-      "tue_am_Martina": { text: "護老樂(富怡)\n5\n3 new", color: "default" },
+      "tue_am_Nanette": { text: "福恩\nFU research", count: "", color: "default" },
+      "tue_am_Tammy": { text: "康福(太安樓) 1 new\n麗濤 2 new", count: "", color: "default" },
+      "tue_am_Dorothy": { text: "仁和居", count: "", color: "purple" },
+      "tue_am_Kelvin": { text: "松山府邸 (2/F new)", count: "", color: "default" },
+      "tue_am_Matthew": { text: "ED MLC 1130", count: "", color: "default" },
+      "tue_am_Christy": { text: "安樂", count: "", color: "default" },
+      "tue_am_Bibianna": { text: "樂怡 Vital stim\n0900 LWH CWY WCK", count: "", color: "default" },
+      "tue_am_Martina": { text: "護老樂(富怡)\n3 new", count: "5", color: "default" },
 
-      "tue_pm_Tammy": { text: "MWC(CIW@SSW)\n14:00", color: "default" },
-      "tue_pm_Kelvin": { text: "LT Meeting", color: "default" },
-      "tue_pm_Christy": { text: "T蓮香1500", color: "default" },
-      "tue_pm_Bibianna": { text: "順福 1030\n1630 off", color: "default" },
-      "tue_pm_Martina": { text: "瑞安\n1", color: "purple" },
+      "tue_pm_Tammy": { text: "MWC(CIW@SSW)\n14:00", count: "", color: "default" },
+      "tue_pm_Kelvin": { text: "LT Meeting", count: "", color: "default" },
+      "tue_pm_Christy": { text: "T蓮香1500", count: "", color: "default" },
+      "tue_pm_Bibianna": { text: "順福 1030\n1630 off", count: "", color: "default" },
+      "tue_pm_Martina": { text: "瑞安", count: "1", color: "purple" },
 
-      "wed_am_Nanette": { text: "耆恩\nHKL carer 1000", color: "default" },
-      "wed_am_Tammy": { text: "雅明\nw/ mst student + iris", color: "default" },
-      "wed_am_Dorothy": { text: "富璟", color: "default" },
-      "wed_am_Kelvin": { text: "綠山居", color: "default" },
-      "wed_am_Matthew": { text: "?ED LYK 0900", color: "default" },
-      "wed_am_Christy": { text: "達源", color: "default" },
-      "wed_am_Bibianna": { text: "匯豐 Vital stim\nLLC 0900 LWH 0930\nFKH WMW CKF 1130\n1600 off", color: "default" },
-      "wed_am_Martina": { text: "康福(東大街)\n2 new", color: "default" },
+      "wed_am_Nanette": { text: "耆恩\nHKL carer 1000", count: "", color: "default" },
+      "wed_am_Tammy": { text: "雅明\nw/ mst student + iris", count: "", color: "default" },
+      "wed_am_Dorothy": { text: "富璟", count: "", color: "default" },
+      "wed_am_Kelvin": { text: "綠山居", count: "", color: "default" },
+      "wed_am_Matthew": { text: "?ED LYK 0900", count: "", color: "default" },
+      "wed_am_Christy": { text: "達源", count: "", color: "default" },
+      "wed_am_Bibianna": { text: "匯豐 Vital stim\nLLC 0900 LWH 0930\nFKH WMW CKF 1130\n1600 off", count: "", color: "default" },
+      "wed_am_Martina": { text: "康福(東大街)\n2 new", count: "", color: "default" },
 
-      "wed_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nDH webinar (15:00)", color: "default" },
+      "wed_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nDH webinar (15:00)", count: "", color: "default" },
 
-      "thu_am_Tammy": { text: "西亞", color: "default" },
-      "thu_am_Dorothy": { text: "10:15 OEP@松齡", color: "purple" },
-      "thu_am_Kelvin": { text: "KM meeting 09:30\n康雅八 (new)\n崇恩\n?M3672@WC", color: "default" },
-      "thu_am_Matthew": { text: "康悅\nsarc dsg screening\n?ED YYK 1615", color: "default" },
-      "thu_am_Christy": { text: "聖德", color: "purple" },
-      "thu_am_Bibianna": { text: "雁豐\n0900 KSF MSK Meal", color: "default" },
-      "thu_am_Martina": { text: "KM meeting 09:30", color: "default" },
+      "thu_am_Tammy": { text: "西亞", count: "", color: "default" },
+      "thu_am_Dorothy": { text: "10:15 OEP@松齡", count: "", color: "purple" },
+      "thu_am_Kelvin": { text: "KM meeting 09:30\n康雅八 (new)\n崇恩\n?M3672@WC", count: "", color: "default" },
+      "thu_am_Matthew": { text: "康悅\nsarc dsg screening\n?ED YYK 1615", count: "", color: "default" },
+      "thu_am_Christy": { text: "聖德", count: "", color: "purple" },
+      "thu_am_Bibianna": { text: "雁豐\n0900 KSF MSK Meal", count: "", color: "default" },
+      "thu_am_Martina": { text: "KM meeting 09:30", count: "", color: "default" },
 
-      "thu_pm_Tammy": { text: "MWC(CKC@AR4)\n14:30", color: "default" },
-      "thu_pm_Bibianna": { text: "樂悠居", color: "default" },
-      "thu_pm_Martina": { text: "環翠 1 new\n3", color: "default" },
+      "thu_pm_Tammy": { text: "MWC(CKC@AR4)\n14:30", count: "", color: "default" },
+      "thu_pm_Bibianna": { text: "樂悠居", count: "", color: "default" },
+      "thu_pm_Martina": { text: "環翠 1 new", count: "3", color: "default" },
 
-      "fri_am_Tammy": { text: "開美\nfish", color: "default" },
-      "fri_am_Dorothy": { text: "雋康頤庭\nchanMY?", color: "purple" },
-      "fri_am_Kelvin": { text: "MRC", color: "default" },
-      "fri_am_Matthew": { text: "真光", color: "default" },
-      "fri_am_Christy": { text: "杏恩\n耀東", color: "default" },
-      "fri_am_Bibianna": { text: "翠灣 CMK 0900", color: "default" },
-      "fri_am_Martina": { text: "?高高", color: "default" },
+      "fri_am_Tammy": { text: "開美\nfish", count: "", color: "default" },
+      "fri_am_Dorothy": { text: "雋康頤庭\nchanMY?", count: "", color: "purple" },
+      "fri_am_Kelvin": { text: "MRC", count: "", color: "default" },
+      "fri_am_Matthew": { text: "真光", count: "", color: "default" },
+      "fri_am_Christy": { text: "杏恩\n耀東", count: "", color: "default" },
+      "fri_am_Bibianna": { text: "翠灣 CMK 0900", count: "", color: "default" },
+      "fri_am_Martina": { text: "?高高", count: "", color: "default" },
 
-      "fri_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nMWC (WYH@KTown, 1530)", color: "default" },
-      "fri_pm_Bibianna": { text: "PM AL", color: "default" },
+      "fri_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nMWC (WYH@KTown, 1530)", count: "", color: "default" },
+      "fri_pm_Bibianna": { text: "PM AL", count: "", color: "default" },
 
-      "sat_am_Nanette": { text: "1430-1630@GC\nOEP 軟餐workshop", color: "purple" },
-      "sat_am_Dorothy": { text: "1430-1630@GC\nOEP 軟餐workshop", color: "purple" },
-
-      "total_Nanette": { text: "0", color: "default" },
-      "total_Tammy": { text: "0", color: "default" },
-      "total_Dorothy": { text: "0", color: "default" },
-      "total_Kelvin": { text: "0", color: "default" },
-      "total_Matthew": { text: "0", color: "default" },
-      "total_Christy": { text: "0", color: "default" },
-      "total_Bibianna": { text: "0", color: "default" },
-      "total_Tina": { text: "0", color: "default" },
-      "total_Jason": { text: "0", color: "default" },
-      "total_Martina": { text: "0", color: "default" },
-      "total_Allen": { text: "18", color: "default" },
-      "total_Fish": { text: "0", color: "default" }
+      "sat_am_Nanette": { text: "1430-1630@GC\nOEP 軟餐workshop", count: "", color: "purple" },
+      "sat_am_Dorothy": { text: "1430-1630@GC\nOEP 軟餐workshop", count: "", color: "purple" },
+      
+      "total_Allen": { count: "18" }
     };
 
     // 3. 9-14/11/2026
     const builtIn_9_14_Nov = {
-      "mon_am_Nanette": { text: "老友所為 visit", color: "default" },
-      "mon_am_Tammy": { text: "松齡\nallen", color: "default" },
-      "mon_am_Kelvin": { text: "松心薈 (3/F)", color: "default" },
-      "mon_am_Christy": { text: "陽光", color: "default" },
-      "mon_pm_Martina": { text: "承坤 monthly rv 1300", color: "default" },
+      "mon_am_Nanette": { text: "老友所為 visit", count: "", color: "default" },
+      "mon_am_Tammy": { text: "松齡\nallen", count: "", color: "default" },
+      "mon_am_Kelvin": { text: "松心薈 (3/F)", count: "", color: "default" },
+      "mon_am_Christy": { text: "陽光", count: "", color: "default" },
+      "mon_pm_Martina": { text: "承坤 monthly rv 1300", count: "", color: "default" },
 
-      "tue_am_Tammy": { text: "麗濤\n恩慈", color: "default" },
-      "tue_am_Kelvin": { text: "CFSS meeting@10:00", color: "default" },
-      "tue_am_Christy": { text: "LSCC 1100", color: "default" },
-      "tue_pm_Tammy": { text: "MWC(CIW@SSW)\n14:00", color: "default" },
-      "tue_pm_Kelvin": { text: "MRCV131@WC 13:30", color: "default" },
-      "tue_pm_Christy": { text: "T蓮香1500", color: "default" },
+      "tue_am_Tammy": { text: "麗濤\n恩慈", count: "", color: "default" },
+      "tue_am_Kelvin": { text: "CFSS meeting@10:00", count: "", color: "default" },
+      "tue_am_Christy": { text: "LSCC 1100", count: "", color: "default" },
+      "tue_pm_Tammy": { text: "MWC(CIW@SSW)\n14:00", count: "", color: "default" },
+      "tue_pm_Kelvin": { text: "MRCV131@WC 13:30", count: "", color: "default" },
+      "tue_pm_Christy": { text: "T蓮香1500", count: "", color: "default" },
 
-      "wed_am_Tammy": { text: "雅明\nw/ mst student", color: "default" },
-      "wed_am_Kelvin": { text: "綠山居", color: "default" },
-      "wed_pm_Dorothy": { text: "MCCC LTH 1430@N", color: "default" },
-      "wed_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)", color: "default" },
-      "wed_pm_Bibianna": { text: "PM CL", color: "default" },
+      "wed_am_Tammy": { text: "雅明\nw/ mst student", count: "", color: "default" },
+      "wed_am_Kelvin": { text: "綠山居", count: "", color: "default" },
+      "wed_pm_Dorothy": { text: "MCCC LTH 1430@N", count: "", color: "default" },
+      "wed_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)", count: "", color: "default" },
+      "wed_pm_Bibianna": { text: "PM CL", count: "", color: "default" },
 
-      "thu_am_Kelvin": { text: "康雅四 2 AL\n康雅七(new) 2\n芳芳(new) 2", color: "default" },
-      "thu_am_Christy": { text: "聖德", color: "purple" },
-      "thu_pm_Tammy": { text: "MWC(CKC@AR4)\n14:30", color: "default" },
+      "thu_am_Kelvin": { text: "康雅四 2 AL\n康雅七(new) 2\n芳芳(new) 2", count: "", color: "default" },
+      "thu_am_Christy": { text: "聖德", count: "", color: "purple" },
+      "thu_pm_Tammy": { text: "MWC(CKC@AR4)\n14:30", count: "", color: "default" },
 
-      "fri_am_Tammy": { text: "開美\nfish", color: "default" },
-      "fri_am_Kelvin": { text: "ASTRA", color: "default" },
-      "fri_am_Matthew": { text: "AL", color: "default" },
-      "fri_am_Bibianna": { text: "華人地區長期照護會議\n0830-1800", color: "default" },
-      "fri_am_Martina": { text: "聖輝 PO", color: "default" },
-      "fri_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nMWC (WYH@KTown, 1530)", color: "default" },
+      "fri_am_Tammy": { text: "開美\nfish", count: "", color: "default" },
+      "fri_am_Kelvin": { text: "ASTRA", count: "", color: "default" },
+      "fri_am_Matthew": { text: "AL", count: "", color: "default" },
+      "fri_am_Bibianna": { text: "華人地區長期照護會議\n0830-1800", count: "", color: "default" },
+      "fri_am_Martina": { text: "聖輝 PO", count: "", color: "default" },
+      "fri_pm_Kelvin": { text: "MWC(LPS@CWB, 1330)\nMWC (WYH@KTown, 1530)", count: "", color: "default" },
 
-      "sat_am_Bibianna": { text: "華人地區長期照護會議\n0830-1800", color: "default" },
-      "sat_am_Jason": { text: "17/11精神健康專業評估及治療介入\nFU P260673 second rv", color: "default" },
+      "sat_am_Bibianna": { text: "華人地區長期照護會議\n0830-1800", count: "", color: "default" },
+      "sat_am_Jason": { text: "17/11精神健康專業評估及治療介入\nFU P260673 second rv", count: "", color: "default" },
 
-      "total_Nanette": { text: "0", color: "default" },
-      "total_Tammy": { text: "0", color: "default" },
-      "total_Dorothy": { text: "0", color: "default" },
-      "total_Kelvin": { text: "6", color: "default" },
-      "total_Matthew": { text: "0", color: "default" },
-      "total_Christy": { text: "0", color: "default" },
-      "total_Bibianna": { text: "0", color: "default" },
-      "total_Tina": { text: "0", color: "default" },
-      "total_Jason": { text: "0", color: "default" },
-      "total_Martina": { text: "0", color: "default" },
-      "total_Allen": { text: "0", color: "default" },
-      "total_Fish": { text: "0", color: "default" }
+      "total_Kelvin": { count: "6" }
     };
 
     let currentSchedule = {};
     let activeCellKey = null;
+    let isEditingCountOnly = false;
 
-    // 載入指定週
     function loadWeekData(weekId) {
       currentActiveWeek = weekId;
       localStorage.setItem(CURRENT_WEEK_KEY, weekId);
@@ -823,10 +799,6 @@
           currentSchedule = JSON.parse(JSON.stringify(builtIn_9_14_Nov));
         } else {
           currentSchedule = {};
-          staffList.forEach(s => {
-            const isOther = s.name === '其他 / 備註';
-            currentSchedule[`total_${isOther ? 'other' : s.name}`] = { text: "0", color: "default" };
-          });
         }
       }
 
@@ -852,10 +824,6 @@
           currentSchedule = JSON.parse(JSON.stringify(builtIn_9_14_Nov));
         } else {
           currentSchedule = {};
-          staffList.forEach(s => {
-            const isOther = s.name === '其他 / 備註';
-            currentSchedule[`total_${isOther ? 'other' : s.name}`] = { text: "0", color: "default" };
-          });
         }
         persistCurrentWeekData();
         showToast(`已還原 ${currentActiveWeek}！`);
@@ -881,7 +849,6 @@
       }
     }
 
-    // 渲染 Tabs
     function renderTabs() {
       const container = document.getElementById('weekTabsContainer');
       container.innerHTML = `
@@ -910,20 +877,19 @@
       });
     }
 
-    // 時段定義
     const timeSlots = [
-      { day: '一', slot: 'am', dayColor: 'text-rose-600', isFirstOfDay: true, sheetRow: 2 },
-      { day: '一', slot: 'pm', dayColor: 'text-rose-600', isFirstOfDay: false, sheetRow: 4 },
-      { day: '二', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true, sheetRow: 6 },
-      { day: '二', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false, sheetRow: 9 },
-      { day: '三', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true, sheetRow: 11 },
-      { day: '三', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false, sheetRow: 13 },
-      { day: '四', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true, sheetRow: 16 },
-      { day: '四', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false, sheetRow: 19 },
-      { day: '五', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true, sheetRow: 21 },
-      { day: '五', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false, sheetRow: 24 },
-      { day: '六', slot: 'am', dayColor: 'text-sky-600', isFirstOfDay: true, isOff: false, sheetRow: 26 },
-      { day: '六', slot: 'pm', dayColor: 'text-sky-600', isFirstOfDay: false, isOff: false, sheetRow: 27 }
+      { day: '一', slot: 'am', dayColor: 'text-rose-600', isFirstOfDay: true },
+      { day: '一', slot: 'pm', dayColor: 'text-rose-600', isFirstOfDay: false },
+      { day: '二', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true },
+      { day: '二', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false },
+      { day: '三', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true },
+      { day: '三', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false },
+      { day: '四', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true },
+      { day: '四', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false },
+      { day: '五', slot: 'am', dayColor: 'text-slate-800', isFirstOfDay: true },
+      { day: '五', slot: 'pm', dayColor: 'text-slate-800', isFirstOfDay: false },
+      { day: '六', slot: 'am', dayColor: 'text-sky-600', isFirstOfDay: true },
+      { day: '六', slot: 'pm', dayColor: 'text-sky-600', isFirstOfDay: false }
     ];
 
     function getDayKey(chineseDay) {
@@ -931,29 +897,28 @@
       return map[chineseDay] || 'mon';
     }
 
-    // 渲染表格內容（精確匹配幾月幾日）
+    // 渲染表格內容（包含獨立數列）
     function renderTable() {
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = '';
 
-      // 取得當前週的精確日期對照表
       const dateMap = getWeekDayDateMap(currentActiveWeek);
 
       timeSlots.forEach((slotInfo) => {
         const dKey = getDayKey(slotInfo.day);
 
-        // 僅在 26-31/10/2026 週五上午前插入工作坊
+        // 工作坊 Banner (五 上午)
         if (currentActiveWeek === '26-31/10/2026' && dKey === 'fri' && slotInfo.slot === 'am') {
           const workshopTr = document.createElement('tr');
           workshopTr.className = "cell-type-yellow";
           workshopTr.innerHTML = `
             <td class="sticky-col-date cell-type-yellow px-2 py-1 text-center font-black text-amber-950 border-r-2 border-slate-300">五</td>
             <td class="sticky-col-time cell-type-yellow px-1 py-1 text-center font-bold text-amber-950 border-r-2 border-slate-300">特別</td>
-            <td colspan="10" class="cell-type-yellow px-3 py-1.5 text-center font-black text-amber-950 tracking-wider">
+            <td colspan="20" class="cell-type-yellow px-3 py-1.5 text-center font-black text-amber-950 tracking-wider">
               MOSTE 「策略創新工作坊」 16:30-18:00
             </td>
-            <td class="col-blue-base"></td>
-            <td class="col-blue-base"></td>
+            <td class="col-blue-base" colspan="2"></td>
+            <td class="col-blue-base" colspan="2"></td>
             <td class="cell-type-yellow px-2 py-1 text-center font-bold text-amber-900 text-[10px]">16:30-18:00</td>
           `;
           tbody.appendChild(workshopTr);
@@ -961,7 +926,7 @@
 
         const tr = document.createElement('tr');
 
-        // 日期欄：精準顯示星期與對應幾月幾日
+        // 日期欄
         if (slotInfo.isFirstOfDay) {
           const tdDate = document.createElement('td');
           tdDate.className = "sticky-col-date bg-white px-1.5 py-2 font-bold text-slate-800 text-center border-r-2 border-slate-300 align-top";
@@ -980,52 +945,64 @@
         tdSlot.innerText = slotInfo.slot;
         tr.appendChild(tdSlot);
 
-        // 渲染 13 個同工欄
+        // 渲染各同工（包含內容格 + 獨立數列格）
         staffList.forEach(staff => {
           const isOther = staff.name === '其他 / 備註';
           const staffKeyName = isOther ? 'other' : staff.name;
           const cellKey = `${dKey}_${slotInfo.slot}_${staffKeyName}`;
-          const cellData = currentSchedule[cellKey] || { text: '', color: 'default' };
+          const cellData = currentSchedule[cellKey] || { text: '', count: '', color: 'default' };
 
-          const td = document.createElement('td');
-          td.dataset.cellKey = cellKey;
-          td.dataset.staff = staff.name;
-          td.dataset.time = `${dateMap[slotInfo.day]} (${slotInfo.day}) ${slotInfo.slot.toUpperCase()}`;
-          td.dataset.sheetRow = slotInfo.sheetRow;
-          td.dataset.sheetCol = staff.colIndex;
-          td.className = `px-2 py-1.5 align-top editable-cell ${getColorClass(cellData.color, staff.baseClass)}`;
+          // 1. 內容格
+          const tdContent = document.createElement('td');
+          tdContent.className = `px-2 py-1.5 align-top editable-cell ${getColorClass(cellData.color, staff.baseClass)}`;
+          tdContent.innerHTML = formatCellHTML(cellData.text, staff.textClass);
+          tdContent.onclick = () => openEditModal(cellKey, staff.name, `${dateMap[slotInfo.day]} (${slotInfo.day}) ${slotInfo.slot.toUpperCase()}`, false);
+          tr.appendChild(tdContent);
 
-          td.innerHTML = formatCellHTML(cellData.text, staff.textClass);
-          td.onclick = () => openEditModal(cellKey, staff.name, td.dataset.time, slotInfo.sheetRow, staff.colIndex);
-
-          tr.appendChild(td);
+          // 2. 獨立數列格
+          if (staff.hasCount) {
+            const tdCount = document.createElement('td');
+            tdCount.className = `px-1 py-1.5 text-center align-top font-bold text-slate-800 editable-cell bg-white/70 hover:bg-emerald-50`;
+            tdCount.innerText = cellData.count || '';
+            tdCount.title = `點擊修改 ${staff.name} 本節個案數`;
+            tdCount.onclick = () => openEditModal(cellKey, staff.name, `${dateMap[slotInfo.day]} (${slotInfo.day}) ${slotInfo.slot.toUpperCase()}`, true);
+            tr.appendChild(tdCount);
+          }
         });
 
         tbody.appendChild(tr);
       });
 
-      // Total Case 總數行
+      // TOTAL CASE 底部加總列
       const totalTr = document.createElement('tr');
       totalTr.className = "bg-excelBlue font-black text-slate-900";
       totalTr.innerHTML = `
         <td colspan="2" class="sticky-col-date bg-excelBlue px-3 py-2.5 text-center border-r-2 border-slate-300 uppercase tracking-wider text-xs">
-          total case
+          TOTAL CASE
         </td>
       `;
 
       staffList.forEach(staff => {
         const isOther = staff.name === '其他 / 備註';
         const staffKeyName = isOther ? 'other' : staff.name;
-        const totalKey = `total_${staffKeyName}`;
-        const totalData = currentSchedule[totalKey] || { text: '0', color: 'default' };
 
-        const totalTd = document.createElement('td');
-        totalTd.className = `px-2 py-2.5 text-center font-black text-sm editable-cell ${getColorClass(totalData.color, staff.baseClass)}`;
-        totalTd.innerText = totalData.text || '0';
-        totalTd.title = "點擊可修改個案總數";
-        totalTd.onclick = () => openEditModal(totalKey, `${staff.name} 總計`, '本週 Total Cases', 30, staff.colIndex);
+        if (staff.hasCount) {
+          const totalContentTd = document.createElement('td');
+          totalContentTd.className = `px-1 py-2 text-center text-slate-400 font-normal ${staff.baseClass}`;
+          totalContentTd.innerText = '';
+          totalTr.appendChild(totalContentTd);
 
-        totalTr.appendChild(totalTd);
+          const sumVal = getStaffIndependentCountSum(staffKeyName);
+          const totalCountTd = document.createElement('td');
+          totalCountTd.className = `px-1 py-2 text-center font-black text-sm text-slate-900 bg-excelBlue border-l border-slate-300`;
+          totalCountTd.innerText = sumVal > 0 ? sumVal : '';
+          totalCountTd.title = `${staff.name} 獨立數列自動加總總數`;
+          totalTr.appendChild(totalCountTd);
+        } else {
+          const emptyTd = document.createElement('td');
+          emptyTd.className = "bg-slate-100";
+          totalTr.appendChild(emptyTd);
+        }
       });
 
       tbody.appendChild(totalTr);
@@ -1065,18 +1042,22 @@
     }
 
     // 編輯 Modal
-    let activeSheetRow = null;
-    let activeSheetCol = null;
-
-    function openEditModal(cellKey, staffName, timeLabel, sheetRow, sheetCol) {
+    function openEditModal(cellKey, staffName, timeLabel, isCountOnly) {
       activeCellKey = cellKey;
-      activeSheetRow = sheetRow;
-      activeSheetCol = sheetCol;
-      const data = currentSchedule[cellKey] || { text: '', color: 'default' };
+      isEditingCountOnly = isCountOnly;
+      const data = currentSchedule[cellKey] || { text: '', count: '', color: 'default' };
 
-      document.getElementById('editModalTitle').innerText = `編輯：${staffName} (${currentActiveWeek})`;
-      document.getElementById('editModalSubtitle').innerText = `${timeLabel} ｜ 本機自動同步`;
-      document.getElementById('editCellText').value = data.text;
+      document.getElementById('editModalTitle').innerText = isCountOnly ? `編輯個案數：${staffName}` : `編輯排班內容：${staffName}`;
+      document.getElementById('editModalSubtitle').innerText = `${timeLabel} ｜ 獨立數列自動加總`;
+      document.getElementById('editCellText').value = data.text || '';
+      document.getElementById('editCellCount').value = data.count || '';
+
+      const countGroup = document.getElementById('countInputGroup');
+      if (staffName === '其他 / 備註') {
+        countGroup.style.display = 'none';
+      } else {
+        countGroup.style.display = 'block';
+      }
 
       const radios = document.getElementsByName('cellColorType');
       radios.forEach(r => {
@@ -1084,19 +1065,22 @@
       });
 
       document.getElementById('editModal').classList.remove('hidden');
-      document.getElementById('editCellText').focus();
+      if (isCountOnly) {
+        document.getElementById('editCellCount').focus();
+      } else {
+        document.getElementById('editCellText').focus();
+      }
     }
 
     function closeEditModal() {
       document.getElementById('editModal').classList.add('hidden');
       activeCellKey = null;
-      activeSheetRow = null;
-      activeSheetCol = null;
     }
 
     function saveCurrentCell() {
       if (!activeCellKey) return;
       const text = document.getElementById('editCellText').value;
+      const count = document.getElementById('editCellCount').value;
       const radios = document.getElementsByName('cellColorType');
       let selectedColor = 'default';
       radios.forEach(r => {
@@ -1105,18 +1089,20 @@
 
       currentSchedule[activeCellKey] = {
         text: text,
+        count: count,
         color: selectedColor
       };
 
       persistCurrentWeekData();
       closeEditModal();
-      showToast('已成功更新並儲存！');
+      showToast('已更新儲存格，獨立數列已即時重新加總！');
     }
 
     function clearCurrentCell() {
       if (!activeCellKey) return;
       document.getElementById('editCellText').value = '';
-      currentSchedule[activeCellKey] = { text: '', color: 'default' };
+      document.getElementById('editCellCount').value = '';
+      currentSchedule[activeCellKey] = { text: '', count: '', color: 'default' };
       persistCurrentWeekData();
       closeEditModal();
       showToast('已清空儲存格內容');
@@ -1124,13 +1110,15 @@
 
     function quickShareFromEdit() {
       const text = document.getElementById('editCellText').value.trim();
-      if (!text) {
+      const count = document.getElementById('editCellCount').value.trim();
+      if (!text && !count) {
         alert('請先輸入內容後再發送！');
         return;
       }
       const title = document.getElementById('editModalTitle').innerText;
       const sub = document.getElementById('editModalSubtitle').innerText;
-      const msg = `📋【新 ST 排班更新】\n${title}\n時段：${sub}\n內容：\n${text}\n-------------------------\n*發送自 Lohascare Gerontech 排班系統*`;
+      const countStr = count ? ` (${count} 個案)` : '';
+      const msg = `📋【新 ST 排班更新】\n${title}\n時段：${sub}\n內容：\n${text}${countStr}\n-------------------------\n*發送自 Lohascare Gerontech 排班系統*`;
       closeEditModal();
       openCustomShare(msg, title);
     }
@@ -1138,19 +1126,22 @@
     function calculateOverview() {
       let total = 0;
       staffList.forEach(s => {
-        if (s.name !== '其他 / 備註' && s.name !== 'Allen' && s.name !== 'Fish') {
-          const val = parseInt(currentSchedule[`total_${s.name}`]?.text || '0', 10);
-          if (!isNaN(val)) total += val;
+        if (s.name !== '其他 / 備註') {
+          total += getStaffIndependentCountSum(s.name);
         }
       });
       document.getElementById('statTotalCases').innerText = total;
     }
 
-    // 匯出 CSV 與 WhatsApp
     function exportToCSV() {
       let csvContent = "\uFEFF";
-      const headers = ["日期", "時段", ...staffList.map(s => s.name)];
-      csvContent += headers.map(h => `"${h}"`).join(",") + "\r\n";
+      
+      let headerRow = ["日期", "時段"];
+      staffList.forEach(s => {
+        headerRow.push(s.name);
+        if (s.hasCount) headerRow.push(`${s.name} 個案數`);
+      });
+      csvContent += headerRow.map(h => `"${h}"`).join(",") + "\r\n";
 
       const dateMap = getWeekDayDateMap(currentActiveWeek);
 
@@ -1160,8 +1151,11 @@
         staffList.forEach(s => {
           const isOther = s.name === '其他 / 備註';
           const key = `${dKey}_${slot.slot}_${isOther ? 'other' : s.name}`;
-          const val = currentSchedule[key]?.text || '';
-          row.push(`"${val.replace(/"/g, '""').replace(/\n/g, ' ')}"`);
+          const cell = currentSchedule[key] || {};
+          row.push(`"${(cell.text || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`);
+          if (s.hasCount) {
+            row.push(`"${cell.count || ''}"`);
+          }
         });
         csvContent += row.join(",") + "\r\n";
       });
@@ -1169,9 +1163,10 @@
       let totalRow = ["本週總計", "TOTAL"];
       staffList.forEach(s => {
         const isOther = s.name === '其他 / 備註';
-        const key = `total_${isOther ? 'other' : s.name}`;
-        const val = currentSchedule[key]?.text || '0';
-        totalRow.push(`"${val}"`);
+        totalRow.push("");
+        if (s.hasCount) {
+          totalRow.push(`"${getStaffIndependentCountSum(isOther ? 'other' : s.name)}"`);
+        }
       });
       csvContent += totalRow.join(",") + "\r\n";
 
@@ -1207,14 +1202,21 @@
       let list = [];
       days.forEach(d => {
         const dText = `${dateMap[d.day]} (${d.day})`;
-        const amVal = currentSchedule[`${d.key}_am_${staffName}`]?.text;
-        const pmVal = currentSchedule[`${d.key}_pm_${staffName}`]?.text;
-        if (amVal) list.push(`• ${dText} AM: ${amVal.replace(/\n/g, ' ')}`);
-        if (pmVal) list.push(`• ${dText} PM: ${pmVal.replace(/\n/g, ' ')}`);
+        const amCell = currentSchedule[`${d.key}_am_${staffName}`];
+        const pmCell = currentSchedule[`${d.key}_pm_${staffName}`];
+
+        if (amCell && (amCell.text || amCell.count)) {
+          const countDesc = amCell.count ? ` [${amCell.count}宗]` : '';
+          list.push(`• ${dText} AM: ${(amCell.text || '').replace(/\n/g, ' ')}${countDesc}`);
+        }
+        if (pmCell && (pmCell.text || pmCell.count)) {
+          const countDesc = pmCell.count ? ` [${pmCell.count}宗]` : '';
+          list.push(`• ${dText} PM: ${(pmCell.text || '').replace(/\n/g, ' ')}${countDesc}`);
+        }
       });
 
-      const totalVal = currentSchedule[`total_${staffName}`]?.text;
-      if (totalVal) list.push(`\n📊 總個案數：${totalVal}`);
+      const totalVal = getStaffIndependentCountSum(staffName);
+      if (totalVal > 0) list.push(`\n📊 總個案數：${totalVal} 宗`);
 
       const content = list.length > 0 ? list.join('\n') : '• 暫無排班安排';
       const text = `📋【新 ST 服務時間表】\n👤 同工：${staffName}\n🗓️ 週期：${currentActiveWeek}\n-------------------------\n${content}\n-------------------------\n*發送自 Lohascare Gerontech 排班系統*`;
@@ -1226,7 +1228,7 @@
       let lines = [];
       staffList.forEach(s => {
         if (s.name !== '其他 / 備註') {
-          const tot = currentSchedule[`total_${s.name}`]?.text || '0';
+          const tot = getStaffIndependentCountSum(s.name);
           lines.push(`• ${s.name}: ${tot} cases`);
         }
       });
